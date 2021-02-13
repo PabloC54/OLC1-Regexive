@@ -6,7 +6,8 @@
 
 ### TERMINALES
 
-| token | lexema |
+| Token | Lexema |
+| --- | --- |
 | llaveA |{ |
 | llaveB | } |
 | conj | CONJ |
@@ -22,7 +23,7 @@
 | cerradura_positiva | + |
 | cerradura_bool | ? |
 | comillas | " |
-| string | <texto> |
+| string | \<texto> |
 | porcentajes | %%\n%%|
 | abrir_comentario | // |
 | cerrar_comentario | \n |
