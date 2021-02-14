@@ -6,7 +6,10 @@
 package GUI;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.font.TextAttribute;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,18 +17,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author pablo
  */
+
 public class MainGUI extends javax.swing.JFrame {
 
     /**
@@ -35,7 +38,7 @@ public class MainGUI extends javax.swing.JFrame {
     public Color secondary_color = new Color(50, 50, 50);
     public Color font_color = new Color(230, 230, 230);
 
-    public static String main_path = System.getProperty("user.dir") + "\\src\\main\\java";
+    public static String main_path = System.getProperty("user.dir") + "\\src";
 
     public MainGUI() {
         initComponents();
@@ -89,6 +92,7 @@ public class MainGUI extends javax.swing.JFrame {
         setForeground(java.awt.Color.darkGray);
         setResizable(false);
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText("Archivo de entrada:");
 
         output_text.setEditable(false);
@@ -115,8 +119,12 @@ public class MainGUI extends javax.swing.JFrame {
         input_text.setColumns(20);
         input_text.setFont(new java.awt.Font("Fira Code", 0, 12)); // NOI18N
         input_text.setRows(5);
-        input_text.setText("No hay archivo de entrada\nAbre uno o crea uno nuevo");
         input_text.setEnabled(false);
+        input_text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                input_textKeyTyped(evt);
+            }
+        });
         jScrollPane3.setViewportView(input_text);
 
         image_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Árboles", "Siguientes", "Transiciones", "Autómatas" }));
@@ -278,8 +286,9 @@ public class MainGUI extends javax.swing.JFrame {
 
     //================================>> ACTIONS <<=========================================
     
-    public String file_name = null;
-    public Boolean saved = false;
+    public String file_name = "";
+    public Boolean saved = true;
+    public File file = new File("");
 
     private void next_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_next_buttonActionPerformed
         // TODO add your handling code here:
@@ -288,13 +297,13 @@ public class MainGUI extends javax.swing.JFrame {
     private void open_dialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_open_dialogActionPerformed
 
         if (saved==false){
-            //guardar
+            Boolean var = saveFileAs();
         }
         
         FileInputStream inputStream = null;
 
         try {
-            File file = openFile(this);
+            file = openFile(this);
             inputStream = new FileInputStream(file);
             input_text.setText(readFromInputStream(inputStream));
                         
@@ -322,50 +331,62 @@ public class MainGUI extends javax.swing.JFrame {
         
         if (file_name.isEmpty()){
             try {
-                String filename = saveFileAs(this);
-                setFileName(filename);
-                
-                Output("Se guardó el archivo exitosamente");
-            } catch (Exception e) {
-                Output("No se pudo guardar el archivo");
-            }
+                if(saveFileAs() == true){
+                    Output("Se guardó exitosamente");
+                    return;
+                }
+            } catch (Exception e) { }
+            
+            Output("No se pudo guardar el archivo");
         }
         else{        
             try {
-                saveFile();
-                Output("Se guardó el archivo exitosamente");
-            } catch (Exception e) {
-                Output("No se pudo guardar el archivo");
-            }
+                if(saveFile() == true){
+                    Output("Se guardó el archivo exitosamente");    
+                    return;
+                }
+            } catch (Exception e) { }
             
+            Output("No se pudo guardar el archivo");            
         }
     }//GEN-LAST:event_save_dialogActionPerformed
 
     private void saveas_dialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveas_dialogActionPerformed
         try {
-            String filename = saveFileAs(this);
-            System.out.println(filename);
-            setFileName(filename);
-            
-            Output("Se guardó el archivo exitosamente");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Output("No se pudo guardar el archivo");
-        }
+            if(saveFileAs() == true){
+                Output("Se guardó exitosamente");
+                return;
+            }
+        } catch (Exception e) { }
+
+        Output("No se pudo guardar el archivo");
     }//GEN-LAST:event_saveas_dialogActionPerformed
 
     private void new_dialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new_dialogActionPerformed
         
-        if (saved==false){
-            //guardar
+        if (saved == false && !input_text.getText().isEmpty()){
+            if(saveFileAs() == false){
+                return;
+            }
         }
         
-        input_text.setEnabled(true);
         input_text.setText("");
         
-        generate_button.setEnabled(true);
-        analize_button.setEnabled(true);
+        if(!input_text.isEnabled()){            
+            input_text.setEnabled(true);        
+            generate_button.setEnabled(true);
+            analize_button.setEnabled(true);
+        }
         
+        Font font = file_name_label.getFont();
+
+        font = font.deriveFont(
+            Collections.singletonMap(
+                TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+
+        file_name_label.setFont(font);
+        
+        saved = false;
         file_name = "";
         file_name_label.setText("unnamed.olc");
     }//GEN-LAST:event_new_dialogActionPerformed
@@ -379,6 +400,20 @@ public class MainGUI extends javax.swing.JFrame {
         img_frame.setImage(image_combobox.getSelectedItem().toString(), image_label.getIcon());
         img_frame.setVisible(true);
     }//GEN-LAST:event_image_labelMouseClicked
+
+    private void input_textKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_input_textKeyTyped
+         if (saved == true){
+            saved = false;
+            Font font = file_name_label.getFont();
+
+            font = font.deriveFont(
+                Collections.singletonMap(
+                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_ULTRABOLD));
+
+            file_name_label.setFont(font);
+            file_name_label.setText(file_name_label.getText()+"*");
+        }     
+    }//GEN-LAST:event_input_textKeyTyped
 
     //================================>> MISC <<=========================================
     public void Output(String text){
@@ -401,16 +436,74 @@ public class MainGUI extends javax.swing.JFrame {
         return fileChooser.getSelectedFile();
     }
 
-    private void saveFile() {
+    private Boolean saveFile() {
+        
+        if(saved == false){
+            
+            BufferedWriter writer;
 
+            try {
+                writer = new BufferedWriter( new FileWriter(file, false));
+                writer.flush();
+                writer.write(input_text.getText());
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }                
+
+            Font font = file_name_label.getFont();
+
+            font = font.deriveFont(
+                Collections.singletonMap(
+                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+
+            file_name_label.setFont(font);
+            file_name_label.setText(file_name_label.getText().substring(0, file_name_label.getText().length()-1));
+
+            saved = true;           
+
+            return true;                
+        }
+        
+        return false;
     }
 
-    private String saveFileAs(final JFrame frame) {        
-        fileChooser = new JFileChooser(main_path);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.showSaveDialog(frame);
+    private Boolean saveFileAs() {
         
-        return fileChooser.getSelectedFile().getName();
+        fileChooser = new JFileChooser(main_path);
+        
+        BufferedWriter writer;
+        String filename = "";
+        int out = fileChooser.showSaveDialog(null);
+        
+        if(out == fileChooser.APPROVE_OPTION){
+            try {
+                file = fileChooser.getSelectedFile();
+                filename = file.getName();
+                writer = new BufferedWriter(new FileWriter(file, false));
+                writer.write(input_text.getText());
+                writer.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            Font font = file_name_label.getFont();
+
+            font = font.deriveFont(
+                Collections.singletonMap(
+                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+
+            file_name_label.setFont(font);
+            file_name_label.setText(file_name_label.getText().substring(0, file_name_label.getText().length()-1));            
+            
+            saved = true;
+            setFileName(filename);            
+            
+            return true;
+        }  
+        
+        return false;
     }
     
     // LEER ARCHIVO
@@ -424,27 +517,8 @@ public class MainGUI extends javax.swing.JFrame {
             }
         }
         return resultStringBuilder.toString();
-    }
+    } 
     
-    // ESCRIBIR ARCHIVO
-    private void writeFile(String directory, String filename, String content){
-        File file = new File(directory, filename);
-        FileWriter filewriter = null;
-        try {
-            filewriter = new FileWriter(file);
-            filewriter.write(content);
-            filewriter.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if(filewriter != null) {
-                try {
-                    filewriter.close();
-                } catch (IOException ex) {
-                }
-            }
-        }
-    }
 
     //=================================>> MAIN <<===========================================
     /**

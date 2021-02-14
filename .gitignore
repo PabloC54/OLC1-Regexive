@@ -1,4 +1,5 @@
 /mavenproject1/target/
+ejemplos
 *.pdf
 
 # NetBeans specific #
@@ -18,3 +19,4 @@ nb-configuration.xml
 *.war
 *.ear
 /Regexive/target/
+/Regexive/nbproject/private/
