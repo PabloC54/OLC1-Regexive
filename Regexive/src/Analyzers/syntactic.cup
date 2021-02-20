@@ -1,0 +1,149 @@
+package Analyzers;
+import java_cup.runtime.*;
+import java.util.Vector;
+
+parser code
+{:
+  /*
+    ESTRUCTURAS PARA EXPRESIONES REGULARES (ÁRBOLES), 
+  */
+
+    private Vector<Vector<String>> Conjuntos = new Vector<>();
+    private Vector<Vector<String>> Expresiones = new Vector<>();
+    private Vector<Vector<String>> Comparaciones = new Vector<>();
+    private Vector<Vector<String>> Errores = new Vector<>();
+
+    public Vector getConjuntos(){
+        return Conjuntos;
+    }  
+
+    public Vector getExpresiones(){
+        return Expresiones;
+    }  
+
+    public Vector getComparaciones(){
+        return Comparaciones;
+    }  
+
+    public Vector getErrores(){
+        return Errores;
+    }   
+
+    private void Conjunto(String id, String definicion){
+      Vector<String> v = new Vector<>();
+      v.add(id);
+      v.add(definicion);
+      Conjuntos.add(v);
+    }
+
+    private void Expresion(String id, String definicion){
+      Vector<String> v = new Vector<>();
+      v.add(id);
+      v.add(definicion);
+      Expresiones.add(v);
+    }
+
+    private void Comparacion(String expresion, String string){
+      Vector<String> v = new Vector<>();
+      v.add(expresion);
+      v.add(string);
+      Comparaciones.add(v);
+    }
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Symbol s){ 
+      System.out.println("Error Sintáctico en la Línea " + (s.left) +
+      " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+
+      Vector<String> v = new Vector<>();
+      v.add(String.valueOf(s.left));
+      v.add(String.valueOf(s.right));
+      v.add(String.valueOf(s.value));
+      Errores.add(v);
+    } 
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }
+
+:}
+
+terminal String L;
+terminal String L_set, D_set, A_set;
+terminal String llaveA, llaveB;
+terminal String dospuntos, puntocoma, flecha;
+terminal String concat, disy, cerr_kleene, cerr_positiva, cerr_bool;
+terminal String especial;
+terminal String porcentajes;
+terminal String conj;
+terminal String id;
+terminal String string;
+
+non terminal INI, S, C;
+non terminal DEFINICION_CONJUNTO, DEFINICION_EXPRESION_REGULAR, COMPARACION;
+non terminal CONJUNTO, EXPRESION_REGULAR;
+non terminal TERMINO;
+
+//precedencia de menos a mas
+precedence left concat, disy;
+precedence right cerr_kleene, cerr_positiva, cerr_bool;
+
+start with INI;
+
+INI ::=
+  llaveA S porcentajes C llaveB
+;
+
+S ::= 
+  DEFINICION_CONJUNTO S
+| DEFINICION_EXPRESION_REGULAR S
+| /*empty*/
+;
+
+C ::=
+  DEFINICION_CONJUNTO C
+| COMPARACION C
+| /*empty*/
+;
+
+DEFINICION_CONJUNTO ::=
+  conj dospuntos id:a flecha CONJUNTO:b puntocoma  {:Conjunto(a, (String) b);:}
+;
+
+CONJUNTO ::=
+  L_set
+| D_set
+| A_set
+;
+
+DEFINICION_EXPRESION_REGULAR ::= 
+  id:a flecha EXPRESION_REGULAR:b puntocoma {:Expresion(a, (String) b);:}
+;
+
+EXPRESION_REGULAR ::=
+  concat EXPRESION_REGULAR EXPRESION_REGULAR
+| disy EXPRESION_REGULAR EXPRESION_REGULAR
+| cerr_kleene EXPRESION_REGULAR
+| cerr_positiva EXPRESION_REGULAR
+| cerr_bool EXPRESION_REGULAR
+| TERMINO
+;
+
+TERMINO ::=
+  L
+| llaveA id llaveB
+| especial
+;
+
+COMPARACION ::= id:a dospuntos string:b puntocoma {:Comparacion(a, (String) b);:}
+;
+
+

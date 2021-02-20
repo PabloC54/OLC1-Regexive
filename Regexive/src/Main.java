@@ -1,5 +1,3 @@
-package main;
-
 
 import GUI.MainGUI;
 
@@ -7,6 +5,7 @@ import GUI.MainGUI;
  *
  * @author pablo
  */
+
 public class Main {
 
     public static MainGUI gui = new MainGUI();

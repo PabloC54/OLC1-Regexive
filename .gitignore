@@ -1,5 +1,6 @@
 /mavenproject1/target/
 ejemplos
+legacy
 *.pdf
 
 # NetBeans specific #

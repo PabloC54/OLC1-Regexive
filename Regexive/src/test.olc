@@ -1,0 +1,26 @@
+{
+    // CONJUNTOS
+    CONJ: letra -> a,b,c;
+    CONJ: letras -> d~z;
+    CONJ: digito -> 0,1;
+    CONJ: digitos -> 2~9;
+    CONJ: simbolos -> !,%,&;
+
+    // EXPRESIONES REGULARES
+    id -> . a | b c
+    id -> . {letras} | | {letras} {digitos} "_"
+    
+    %%
+    
+    ExpReg1 : "primerLexemaCokoa";
+    ExpresionReg2 : “34.44”;
+
+    <!COMENTARIO!>
+
+    <!
+    
+    COMENTARIO
+    MULTILINEA
+            !>
+    
+}
