@@ -1,6 +1,6 @@
 package Analyzers;
 import java_cup.runtime.Symbol;
-import java.util.Vector;
+import java.util.ArrayList;
 
 %%
 %class Scanner
@@ -16,7 +16,7 @@ import java.util.Vector;
 
     Symbol Simbolo(int linea, int columna, String lexema, String token, int s){
 
-    Vector<String> v = new Vector<>();
+    ArrayList<String> v = new ArrayList<>();
     v.add(String.valueOf(linea));
     v.add(String.valueOf(columna));
     v.add(token);
@@ -29,21 +29,19 @@ import java.util.Vector;
 
   void ErrorLexico(int linea, int columna, String lexema){
     
-    Vector<String> v = new Vector<>();
+    ArrayList<String> v = new ArrayList<>();
     v.add(String.valueOf(linea));
     v.add(String.valueOf(columna));
     v.add(lexema);
 
     Errores.add(v);
-
-    System.out.println("[#Error Léxico] ["+linea+", "+columna+"]  No se esperaba '"+lexema+"'.");
   }
 
-    Vector getSimbolos(){
+    public ArrayList getSimbolos(){
         return Simbolos;
     }
 
-    Vector getErrores(){
+    public ArrayList getErrores(){
         return Errores;
     }
 
@@ -51,10 +49,10 @@ import java.util.Vector;
 
 
 %init{
-  yyline = 1;
-  yychar = 1;
-  Vector<Vector<String>> Simbolos = new Vector<>();
-  Vector<Vector<String>> Errores = new Vector<>();
+    yyline = 1;
+    yychar = 1;
+    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
 %init}
 
 L=[a-zA-ZñÑ]
@@ -84,8 +82,10 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 
 %%
 
-{comentario}                {}
-{comentario_multilinea}     {}
+{comentario}                {yychar=1;}
+{comentario_multilinea}     {yychar=1;}
+\n {yychar=1;}
+{blanco}        {}
 
 {llaveA}        {return Simbolo(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
 {llaveB}        {return Simbolo(yyline, yychar, yytext(), "llaveB", sym.llaveB);}
@@ -107,10 +107,6 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 {id}            {return Simbolo(yyline, yychar, yytext(), "id", sym.id);}
 {string}        {return Simbolo(yyline, yychar, yytext(), "string", sym.string);}
 
-\n {yychar=1;}
-
-{blanco}        {} 
-{D}             {}
 
 . {
   ErrorLexico(yyline, yychar, yytext());

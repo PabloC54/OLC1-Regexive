@@ -7,13 +7,14 @@
     CONJ: simbolos -> !,%,&;
 
     // EXPRESIONES REGULARES
-    id -> . a | b c
-    id -> . {letras} | | {letras} {digitos} "_"
+    id -> . a | \" . \n \';
+    id -> . {letras} | {digitos} "hola";
     
     %%
     
     ExpReg1 : "primerLexemaCokoa";
-    ExpresionReg2 : “34.44”;
+    ExpresionReg2 : "34.44";
+
 
     <!COMENTARIO!>
 

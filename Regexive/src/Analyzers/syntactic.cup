@@ -1,6 +1,6 @@
 package Analyzers;
 import java_cup.runtime.*;
-import java.util.Vector;
+import java.util.ArrayList;
 
 parser code
 {:
@@ -8,72 +8,71 @@ parser code
     ESTRUCTURAS PARA EXPRESIONES REGULARES (ÁRBOLES), 
   */
 
-    private Vector<Vector<String>> Conjuntos = new Vector<>();
-    private Vector<Vector<String>> Expresiones = new Vector<>();
-    private Vector<Vector<String>> Comparaciones = new Vector<>();
-    private Vector<Vector<String>> Errores = new Vector<>();
+    private ArrayList<ArrayList<String>> Conjuntos = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Expresiones = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Comparaciones = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
+        
+    private ArrayList<String> expresion = new ArrayList<>();
 
-    public Vector getConjuntos(){
+    public ArrayList getConjuntos(){
         return Conjuntos;
     }  
 
-    public Vector getExpresiones(){
+    public ArrayList getExpresiones(){
         return Expresiones;
     }  
 
-    public Vector getComparaciones(){
+    public ArrayList getComparaciones(){
         return Comparaciones;
     }  
 
-    public Vector getErrores(){
+    public ArrayList getErrores(){
         return Errores;
     }   
 
     private void Conjunto(String id, String definicion){
-      Vector<String> v = new Vector<>();
-      v.add(id);
-      v.add(definicion);
-      Conjuntos.add(v);
+        ArrayList<String> v = new ArrayList<>();
+        v.add(id);
+        v.add(definicion);
+        Conjuntos.add(v);  
     }
 
-    private void Expresion(String id, String definicion){
-      Vector<String> v = new Vector<>();
-      v.add(id);
-      v.add(definicion);
-      Expresiones.add(v);
+    private void Expresion(String id){
+        expresion.add(0, id);
+        Expresiones.add(expresion);
+        expresion = new ArrayList<>();
+    }
+
+    private void Termino(String operacion){
+        expresion.add(0, operacion);
+    }
+
+    private void Termino(String a, String b){
+        expresion.add(0, a);
+        expresion.add(0, b);
     }
 
     private void Comparacion(String expresion, String string){
-      Vector<String> v = new Vector<>();
-      v.add(expresion);
-      v.add(string);
-      Comparaciones.add(v);
+        ArrayList<String> v = new ArrayList<>();
+        v.add(expresion);
+        v.add(string);
+        Comparaciones.add(v);
     }
 
-    /**
-     * Método al que se llama automáticamente ante algún error sintactico.
-     **/ 
     public void syntax_error(Symbol s){ 
-      System.out.println("Error Sintáctico en la Línea " + (s.left) +
-      " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
-
-      Vector<String> v = new Vector<>();
-      v.add(String.valueOf(s.left));
-      v.add(String.valueOf(s.right));
-      v.add(String.valueOf(s.value));
-      Errores.add(v);
+        ArrayList<String> v = new ArrayList<>();
+        v.add(String.valueOf(s.left));
+        v.add(String.valueOf(s.right));
+        v.add(String.valueOf(s.value));
+        Errores.add(v);
     } 
 
-    /**
-     * Método al que se llama automáticamente ante algún error sintáctico 
-     * en el que ya no es posible una recuperación de errores.
-     **/ 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
         System.out.println("Error síntactico irrecuperable en la Línea " + 
         (s.left)+ " Columna "+s.right+". Componente " + s.value + 
         " no reconocido."); 
     }
-
 :}
 
 terminal String L;
@@ -92,7 +91,6 @@ non terminal DEFINICION_CONJUNTO, DEFINICION_EXPRESION_REGULAR, COMPARACION;
 non terminal CONJUNTO, EXPRESION_REGULAR;
 non terminal TERMINO;
 
-//precedencia de menos a mas
 precedence left concat, disy;
 precedence right cerr_kleene, cerr_positiva, cerr_bool;
 
@@ -119,28 +117,29 @@ DEFINICION_CONJUNTO ::=
 ;
 
 CONJUNTO ::=
-  L_set
-| D_set
-| A_set
+  L_set:a                                       {:RESULT=a;:}
+| D_set:a                                       {:RESULT=a;:}
+| A_set:a                                       {:RESULT=a;:}
 ;
 
 DEFINICION_EXPRESION_REGULAR ::= 
-  id:a flecha EXPRESION_REGULAR:b puntocoma {:Expresion(a, (String) b);:}
+  id:a flecha EXPRESION_REGULAR puntocoma       {:Expresion(a);:}
 ;
 
 EXPRESION_REGULAR ::=
-  concat EXPRESION_REGULAR EXPRESION_REGULAR
-| disy EXPRESION_REGULAR EXPRESION_REGULAR
-| cerr_kleene EXPRESION_REGULAR
-| cerr_positiva EXPRESION_REGULAR
-| cerr_bool EXPRESION_REGULAR
-| TERMINO
+  concat EXPRESION_REGULAR EXPRESION_REGULAR    {:Termino(".");:}
+| disy EXPRESION_REGULAR EXPRESION_REGULAR      {:Termino("|");:}
+| cerr_kleene EXPRESION_REGULAR                 {:Termino("*");:}
+| cerr_positiva EXPRESION_REGULAR               {:Termino("+");:}
+| cerr_bool EXPRESION_REGULAR                   {:Termino("?");:}
+| TERMINO                                        
 ;
 
 TERMINO ::=
-  L
-| llaveA id llaveB
-| especial
+  L:a                                           {:Termino(a);:}
+| string:a                                      {:Termino(a);:}
+| llaveA id:a llaveB                            {:Termino(a);:}
+| especial:a                                    {:Termino(a);:}
 ;
 
 COMPARACION ::= id:a dospuntos string:b puntocoma {:Comparacion(a, (String) b);:}

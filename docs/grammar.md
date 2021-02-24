@@ -4,32 +4,32 @@
 
 ### Símbolos terminales
 
-|         Token         |                   Patrón                   |
-| :-------------------: | :----------------------------------------: |
-|           L           |                 [a-zA-ZñÑ]                 |
-|           D           |                   [0-9]                    |
-|           A           |       [\x20-\x2F\x3A-\x40\x5B-\x7D]        |
-|        blanco         |                  [\040\t]                  |
-|         L_set         | (L(,L)+)\|([a-zñ]~[a-zñ])\|([A-ZÑ]~[A-ZÑ]) |
-|         D_set         |              (D(,D)+)\|(D~D)               |
-|         A_set         |              (A(,A)+)\|(A~A)               |
-|        llaveA         |                     {                      |
-|        llaveB         |                     }                      |
-|       dospuntos       |                     :                      |
-|       puntocoma       |                     ;                      |
-|        flecha         |                     ->                     |
-|        concat         |                     .                      |
-|         disy          |                     \|                     |
-|      cerr_kleene      |                     \*                     |
-|     cerr_positiva     |                     +                      |
-|       cerr_bool       |                     ?                      |
-|       especial        |            (\\n)\|(\\')\|(\\")             |
-|      porcentajes      |                     %%                     |
-|         conj          |                    conj                    |
-|          id           |               L(L\|D\|\_)\*                |
-|        string         |              "(.\|blanco)\*"               |
-|      comentario       |             //(.\|blanco)\*\n$             |
-| comentario_multilinea |           <!(.\|blanco\|\n)\*!>            |
+| Token | Lexema | Patrón |
+| :-: | :-: | :-: |
+| L | **_letra_** | [a-zA-ZñÑ] |
+| D | **_digito_** | [0-9] |
+| A | **_ASCII_** | [\x20-\x2F\x3A-\x40\x5B-\x7D] |
+| blanco | espacio, tab | [\040\t] |
+| L_set | conjunto de **_letras_** | (L(,L)+)\|([a-zñ]~[a-zñ])\|([A-ZÑ]~[A-ZÑ]) |
+| D_set | conjunto de **_digitos_** | (D(,D)+)\|(D~D) |
+| A_set | conjunto de **_ASCII_** | (A(,A)+)\|(A~A) |
+| llaveA | { | { |
+| llaveB | } | } |
+| dospuntos | : | : |
+| puntocoma | ; | ; |
+| flecha | -> | -> |
+| concat | . | . |
+| disy | \| | \| |
+| cerr_kleene | \* | \* |
+| cerr_positiva | + | + |
+| cerr_bool | ? | ? |
+| especial | **_caracter especial_** | (\\n)\|(\\')\|(\\") |
+| porcentajes | %% | %% |
+| conj | conj | conj |
+| id | **_identificador_** | L(L\|D\|\_)\* |
+| string | **_cadena_** | "(.\|blanco)\*" |
+| comentario | comentario de una linea | //(.\|blanco)\*\n$ |
+| comentario_multilinea | comentario de **_n_** lineas | <!(.\|blanco\|\n)\*!> |
 
 ### Símbolos no terminales
 
@@ -74,6 +74,7 @@ EXPRESION_REGULAR => concat EXPRESION_REGULAR EXPRESION_REGULAR
                    | TERMINO
 
 TERMINO => L
+		 | string
          | llaveA id llaveB
          | especial
 

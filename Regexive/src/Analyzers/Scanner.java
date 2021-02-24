@@ -1,7 +1,7 @@
 package Analyzers;
 
 import java_cup.runtime.Symbol;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Scanner implements java_cup.runtime.Scanner {
 
@@ -15,11 +15,8 @@ public class Scanner implements java_cup.runtime.Scanner {
     private final int YY_BOL = 65536;
     private final int YY_EOF = 65537;
 
-    private Vector<Vector<String>> Simbolos = new Vector<>();
-    private Vector<Vector<String>> Errores = new Vector<>();
-
     Symbol Simbolo(int linea, int columna, String lexema, String token, int s) {
-        Vector<String> v = new Vector<>();
+        ArrayList<String> v = new ArrayList<>();
         v.add(String.valueOf(linea));
         v.add(String.valueOf(columna));
         v.add(token);
@@ -29,19 +26,18 @@ public class Scanner implements java_cup.runtime.Scanner {
     }
 
     void ErrorLexico(int linea, int columna, String lexema) {
-        Vector<String> v = new Vector<>();
+        ArrayList<String> v = new ArrayList<>();
         v.add(String.valueOf(linea));
         v.add(String.valueOf(columna));
         v.add(lexema);
         Errores.add(v);
-        System.out.println("[#Error Léxico] [" + linea + ", " + columna + "]  No se esperaba '" + lexema + "'.");
     }
 
-    Vector getSimbolos() {
+    public ArrayList getSimbolos() {
         return Simbolos;
     }
 
-    Vector getErrores() {
+    public ArrayList getErrores() {
         return Errores;
     }
     private java.io.BufferedReader yy_reader;
@@ -54,6 +50,9 @@ public class Scanner implements java_cup.runtime.Scanner {
     private int yyline;
     private boolean yy_at_bol;
     private int yy_lexical_state;
+
+    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
 
     public Scanner(java.io.Reader reader) {
         this();
@@ -281,28 +280,28 @@ public class Scanner implements java_cup.runtime.Scanner {
         /* 23 */ YY_NO_ANCHOR,
         /* 24 */ YY_NO_ANCHOR,
         /* 25 */ YY_NO_ANCHOR,
-        /* 26 */ YY_NO_ANCHOR,
-        /* 27 */ YY_NOT_ACCEPT,
+        /* 26 */ YY_NOT_ACCEPT,
+        /* 27 */ YY_NO_ANCHOR,
         /* 28 */ YY_NO_ANCHOR,
         /* 29 */ YY_NO_ANCHOR,
         /* 30 */ YY_NO_ANCHOR,
         /* 31 */ YY_NO_ANCHOR,
         /* 32 */ YY_NO_ANCHOR,
-        /* 33 */ YY_NO_ANCHOR,
-        /* 34 */ YY_NOT_ACCEPT,
+        /* 33 */ YY_NOT_ACCEPT,
+        /* 34 */ YY_NO_ANCHOR,
         /* 35 */ YY_NO_ANCHOR,
-        /* 36 */ YY_NO_ANCHOR,
-        /* 37 */ YY_NOT_ACCEPT,
-        /* 38 */ YY_NO_ANCHOR,
-        /* 39 */ YY_NOT_ACCEPT,
-        /* 40 */ YY_NO_ANCHOR,
-        /* 41 */ YY_NOT_ACCEPT,
-        /* 42 */ YY_NO_ANCHOR,
-        /* 43 */ YY_NOT_ACCEPT,
-        /* 44 */ YY_NO_ANCHOR,
-        /* 45 */ YY_NOT_ACCEPT,
-        /* 46 */ YY_NO_ANCHOR,
-        /* 47 */ YY_NOT_ACCEPT,
+        /* 36 */ YY_NOT_ACCEPT,
+        /* 37 */ YY_NO_ANCHOR,
+        /* 38 */ YY_NOT_ACCEPT,
+        /* 39 */ YY_NO_ANCHOR,
+        /* 40 */ YY_NOT_ACCEPT,
+        /* 41 */ YY_NO_ANCHOR,
+        /* 42 */ YY_NOT_ACCEPT,
+        /* 43 */ YY_NO_ANCHOR,
+        /* 44 */ YY_NOT_ACCEPT,
+        /* 45 */ YY_NO_ANCHOR,
+        /* 46 */ YY_NOT_ACCEPT,
+        /* 47 */ YY_NO_ANCHOR,
         /* 48 */ YY_NOT_ACCEPT,
         /* 49 */ YY_NOT_ACCEPT,
         /* 50 */ YY_NOT_ACCEPT,
@@ -326,28 +325,28 @@ public class Scanner implements java_cup.runtime.Scanner {
         + ":2")[0];
 
     private int yy_rmap[] = unpackFromString(1, 63,
-        "0,1,2:2,3:2,4,5,3:7,2,6,2:2,7,2:2,8,9,10,11,6,12,2,3,13,2:3,14,15,16,17,3,1"
-        + "1,18,19,20,21,22,23,24,25,26,27,28,29,7,30,31,32,33,34,7,35,36,37,38")[0];
+        "0,1,2:2,3:2,4,3:7,2,5,2:2,6,2:2,7,8,9,10,5,11,2,3,12,2:3,13,14,15,16,3,10,1"
+        + "7,18,19,20,21,22,23,24,25,26,27,28,29,6,30,31,32,33,34,6,35,36,37,38")[0];
 
     private int yy_nxt[][] = unpackFromString(39, 37,
-        "-1,1,28,2,3,35,38:2,4,5,6,38,55,28,60,7,29,38,61,8,9,40,10,11,12,13,14,42,6"
-        + "1,38,44,46,62,61:2,38,15,-1,27,-1:9,34,-1,37,-1:71,34,-1,37,-1:33,16,41,16,"
-        + "43,16:2,-1:2,16,-1:9,16,-1:3,16:4,-1:12,48,-1,49,-1:33,16,-1,16,-1,16:2,-1:"
-        + "2,16,-1:9,16,-1:3,16:4,-1:2,52:3,-1,52:25,19,52:5,-1:12,34,-1:36,41,-1:36,4"
-        + "8,-1:26,39:5,54,39:29,-1:2,27:3,21,27:31,-1:11,16,-1,16,-1,16:2,-1:2,16,-1:"
-        + "9,16,-1:3,16:2,26,16,-1:2,22,-1:3,22:5,-1,22,-1:4,22:20,-1:7,39,-1:4,34,-1,"
-        + "37,-1:24,52:3,-1,52:6,53,52:18,19,52:5,-1:2,31,-1:3,31:5,-1,31,-1:4,31:20,-"
-        + "1:8,17,-1:3,34,-1,37,-1:33,23,-1,23,-1,23,-1:3,23,-1:9,23,-1:3,23:3,-1:13,3"
-        + "4,-1,37,-1:14,18:3,-1:16,32,-1:3,32,-1:3,32,-1:9,32,-1:3,32:3,-1:3,52:3,-1,"
-        + "52:6,53,52,59,52:16,19,52:5,-1:13,32,-1,32,-1:3,32,-1:9,32,-1:3,32:3,-1:13,"
-        + "34,-1,37,-1:17,20,-1:15,32,-1,32,-1,32,-1:3,32,-1:9,32,-1:3,32:3,-1:17,24,-"
-        + "1:36,33,-1:22,22,-1:3,22:5,23,22,23,-1,23,-1,22:2,57,22:9,57,22:3,57:3,22,-"
-        + "1:2,31,-1:3,31:5,32,31,32,-1,32,-1,31:2,32,31:9,32,31:3,32:3,31,-1:2,36,52:"
-        + "2,-1,36:5,52,36,52:4,36:20,-1:2,39:5,54,25,39:28,-1:11,16,41,16,45,16:2,-1:"
-        + "2,16,-1:9,16,-1:3,16:4,-1:11,16,-1,16,-1,16:2,-1:2,16,-1:9,30,-1:3,16:4,-1:"
-        + "12,50,-1:26,58,52:2,-1,58:5,52,58,52:4,58:20,-1:11,16,41,16,47,16:2,-1:2,16"
-        + ",-1:9,16,-1:3,16:4,-1:11,16,50,16,51,16:2,-1:2,16,-1:9,16,-1:3,16:4,-1:11,1"
-        + "6,50,16,51,16:2,-1:2,16,-1:9,16,-1:3,16,56,16:2,-1");
+        "-1,1,27,2,3,34,37:2,4,5,6,37,55,27,60,39,28,37,61,7,8,41,9,10,11,12,13,43,6"
+        + "1,37,45,47,62,61:2,37,14,-1,26,-1:9,33,-1,36,-1:71,33,-1,36,-1:33,15,40,15,"
+        + "42,15:2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,15,-1"
+        + ":3,15:4,-1:2,52:3,-1,52:25,18,52:5,-1:12,33,-1:36,40,-1:36,48,-1:26,38:5,54"
+        + ",38:29,-1:2,26:3,20,26:31,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,15,-1:3,15:2,"
+        + "25,15,-1:2,21,-1:3,21:5,-1,21,-1:4,21:20,-1:7,38,-1:4,33,-1,36,-1:24,52:3,-"
+        + "1,52:6,53,52:18,18,52:5,-1:2,30,-1:3,30:5,-1,30,-1:4,30:20,-1:12,48,-1,49,-"
+        + "1:33,22,-1,22,-1,22,-1:3,22,-1:9,22,-1:3,22:3,-1:9,16,-1:3,33,-1,36,-1:33,3"
+        + "1,-1:3,31,-1:3,31,-1:9,31,-1:3,31:3,-1:13,33,-1,36,-1:14,17:3,-1:18,31,-1,3"
+        + "1,-1:3,31,-1:9,31,-1:3,31:3,-1:3,52:3,-1,52:6,53,52,59,52:16,18,52:5,-1:11,"
+        + "31,-1,31,-1,31,-1:3,31,-1:9,31,-1:3,31:3,-1:13,33,-1,36,-1:17,19,-1:20,23,-"
+        + "1:36,32,-1:22,21,-1:3,21:5,22,21,22,-1,22,-1,21:2,57,21:9,57,21:3,57:3,21,-"
+        + "1:2,30,-1:3,30:5,31,30,31,-1,31,-1,30:2,31,30:9,31,30:3,31:3,30,-1:2,35,52:"
+        + "2,-1,35:5,52,35,52:4,35:20,-1:2,38:5,54,24,38:28,-1:11,15,40,15,44,15:2,-1:"
+        + "2,15,-1:9,15,-1:3,15:4,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,29,-1:3,15:4,-1:"
+        + "12,50,-1:26,58,52:2,-1,58:5,52,58,52:4,58:20,-1:11,15,40,15,46,15:2,-1:2,15"
+        + ",-1:9,15,-1:3,15:4,-1:11,15,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,1"
+        + "5,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15,56,15:2,-1");
 
     public Symbol next_token()
         throws java.io.IOException {
@@ -424,163 +423,164 @@ public class Scanner implements java_cup.runtime.Scanner {
                         case -7:
                             break;
                         case 7: {
+                            return Simbolo(yyline, yychar, yytext(), "dospuntos", sym.dospuntos);
                         }
                         case -8:
                             break;
                         case 8: {
-                            return Simbolo(yyline, yychar, yytext(), "dospuntos", sym.dospuntos);
+                            return Simbolo(yyline, yychar, yytext(), "puntocoma", sym.puntocoma);
                         }
                         case -9:
                             break;
                         case 9: {
-                            return Simbolo(yyline, yychar, yytext(), "puntocoma", sym.puntocoma);
+                            return Simbolo(yyline, yychar, yytext(), "concat", sym.concat);
                         }
                         case -10:
                             break;
                         case 10: {
-                            return Simbolo(yyline, yychar, yytext(), "concat", sym.concat);
+                            return Simbolo(yyline, yychar, yytext(), "disy", sym.disy);
                         }
                         case -11:
                             break;
                         case 11: {
-                            return Simbolo(yyline, yychar, yytext(), "disy", sym.disy);
+                            return Simbolo(yyline, yychar, yytext(), "cerr_kleene", sym.cerr_kleene);
                         }
                         case -12:
                             break;
                         case 12: {
-                            return Simbolo(yyline, yychar, yytext(), "cerr_kleene", sym.cerr_kleene);
+                            return Simbolo(yyline, yychar, yytext(), "cerr_positiva", sym.cerr_positiva);
                         }
                         case -13:
                             break;
                         case 13: {
-                            return Simbolo(yyline, yychar, yytext(), "cerr_positiva", sym.cerr_positiva);
+                            return Simbolo(yyline, yychar, yytext(), "cerr_bool", sym.cerr_bool);
                         }
                         case -14:
                             break;
-                        case 14: {
-                            return Simbolo(yyline, yychar, yytext(), "cerr_bool", sym.cerr_bool);
-                        }
+                        case 14:
+
                         case -15:
                             break;
-                        case 15:
-
+                        case 15: {
+                            return Simbolo(yyline, yychar, yytext(), "id", sym.id);
+                        }
                         case -16:
                             break;
                         case 16: {
-                            return Simbolo(yyline, yychar, yytext(), "id", sym.id);
+                            return Simbolo(yyline, yychar, yytext(), "flecha", sym.flecha);
                         }
                         case -17:
                             break;
                         case 17: {
-                            return Simbolo(yyline, yychar, yytext(), "flecha", sym.flecha);
+                            return Simbolo(yyline, yychar, yytext(), "especial", sym.especial);
                         }
                         case -18:
                             break;
                         case 18: {
-                            return Simbolo(yyline, yychar, yytext(), "especial", sym.especial);
+                            return Simbolo(yyline, yychar, yytext(), "string", sym.string);
                         }
                         case -19:
                             break;
                         case 19: {
-                            return Simbolo(yyline, yychar, yytext(), "string", sym.string);
+                            return Simbolo(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);
                         }
                         case -20:
                             break;
                         case 20: {
-                            return Simbolo(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);
+                            yychar = 1;
                         }
                         case -21:
                             break;
                         case 21: {
-                            System.out.println(">>>> COMENTARIO <<<<");
+                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
                         }
                         case -22:
                             break;
                         case 22: {
-                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
+                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
                         }
                         case -23:
                             break;
                         case 23: {
-                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
+                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
                         }
                         case -24:
                             break;
                         case 24: {
-                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
+                            yychar = 1;
                         }
                         case -25:
                             break;
                         case 25: {
-                            System.out.println(">>>> COMENTARIO MULTILINEA <<<<");
+                            return Simbolo(yyline, yychar, yytext(), "conj", sym.conj);
                         }
                         case -26:
                             break;
-                        case 26: {
-                            return Simbolo(yyline, yychar, yytext(), "conj", sym.conj);
+                        case 27: {
+                            ErrorLexico(yyline, yychar, yytext());
                         }
                         case -27:
                             break;
                         case 28: {
-                            ErrorLexico(yyline, yychar, yytext());
                         }
                         case -28:
                             break;
                         case 29: {
+                            return Simbolo(yyline, yychar, yytext(), "id", sym.id);
                         }
                         case -29:
                             break;
                         case 30: {
-                            return Simbolo(yyline, yychar, yytext(), "id", sym.id);
+                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
                         }
                         case -30:
                             break;
                         case 31: {
-                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
+                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
                         }
                         case -31:
                             break;
                         case 32: {
-                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
+                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
                         }
                         case -32:
                             break;
-                        case 33: {
-                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
+                        case 34: {
+                            ErrorLexico(yyline, yychar, yytext());
                         }
                         case -33:
                             break;
                         case 35: {
-                            ErrorLexico(yyline, yychar, yytext());
+                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
                         }
                         case -34:
                             break;
-                        case 36: {
-                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
+                        case 37: {
+                            ErrorLexico(yyline, yychar, yytext());
                         }
                         case -35:
                             break;
-                        case 38: {
+                        case 39: {
                             ErrorLexico(yyline, yychar, yytext());
                         }
                         case -36:
                             break;
-                        case 40: {
+                        case 41: {
                             ErrorLexico(yyline, yychar, yytext());
                         }
                         case -37:
                             break;
-                        case 42: {
+                        case 43: {
                             ErrorLexico(yyline, yychar, yytext());
                         }
                         case -38:
                             break;
-                        case 44: {
+                        case 45: {
                             ErrorLexico(yyline, yychar, yytext());
                         }
                         case -39:
                             break;
-                        case 46: {
+                        case 47: {
                             ErrorLexico(yyline, yychar, yytext());
                         }
                         case -40:
