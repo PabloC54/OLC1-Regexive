@@ -44,13 +44,8 @@ parser code
         expresion = new ArrayList<>();
     }
 
-    private void Termino(String operacion){
-        expresion.add(0, operacion);
-    }
-
-    private void Termino(String a, String b){
-        expresion.add(0, a);
-        expresion.add(0, b);
+    private void Termino(String a){
+        expresion.add(a);
     }
 
     private void Comparacion(String expresion, String string){
@@ -117,32 +112,32 @@ DEFINICION_CONJUNTO ::=
 ;
 
 CONJUNTO ::=
-  L_set:a                                       {:RESULT=a;:}
-| D_set:a                                       {:RESULT=a;:}
-| A_set:a                                       {:RESULT=a;:}
+  L_set:a                                          {:RESULT=a;:}
+| D_set:a                                          {:RESULT=a;:}
+| A_set:a                                          {:RESULT=a;:}
 ;
 
 DEFINICION_EXPRESION_REGULAR ::= 
-  id:a flecha EXPRESION_REGULAR puntocoma       {:Expresion(a);:}
+  id:a flecha EXPRESION_REGULAR puntocoma          {:Expresion(a);:}
 ;
 
 EXPRESION_REGULAR ::=
-  concat EXPRESION_REGULAR EXPRESION_REGULAR    {:Termino(".");:}
-| disy EXPRESION_REGULAR EXPRESION_REGULAR      {:Termino("|");:}
-| cerr_kleene EXPRESION_REGULAR                 {:Termino("*");:}
-| cerr_positiva EXPRESION_REGULAR               {:Termino("+");:}
-| cerr_bool EXPRESION_REGULAR                   {:Termino("?");:}
-| TERMINO                                        
+  concat:a EXPRESION_REGULAR EXPRESION_REGULAR       {:expresion.add(0, a);:}
+| disy:a EXPRESION_REGULAR EXPRESION_REGULAR         {:expresion.add(0, a);:}
+| cerr_kleene:a EXPRESION_REGULAR                    {:expresion.add(0, a);:}
+| cerr_positiva:a EXPRESION_REGULAR                  {:expresion.add(0, a);:}
+| cerr_bool:a EXPRESION_REGULAR                      {:expresion.add(0, a);:}
+| TERMINO                                     
 ;
 
 TERMINO ::=
-  L:a                                           {:Termino(a);:}
-| string:a                                      {:Termino(a);:}
-| llaveA id:a llaveB                            {:Termino(a);:}
-| especial:a                                    {:Termino(a);:}
+  L:a                                              {:expresion.add(0, a);:}
+| string:a                                         {:expresion.add(0, a);:}
+| llaveA id:a llaveB                               {:expresion.add(0, a);:}
+| especial:a                                       {:expresion.add(0, a);:}
 ;
 
-COMPARACION ::= id:a dospuntos string:b puntocoma {:Comparacion(a, (String) b);:}
+COMPARACION ::= id:a dospuntos string:b puntocoma  {:Comparacion(a, (String) b);:}
 ;
 
 

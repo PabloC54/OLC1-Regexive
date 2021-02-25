@@ -84,8 +84,8 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 
 {comentario}                {yychar=1;}
 {comentario_multilinea}     {yychar=1;}
-\n {yychar=1;}
-{blanco}        {}
+\n                          {yychar=1;}
+{blanco}                    {}
 
 {llaveA}        {return Simbolo(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
 {llaveB}        {return Simbolo(yyline, yychar, yytext(), "llaveB", sym.llaveB);}

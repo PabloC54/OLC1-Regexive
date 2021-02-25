@@ -7,8 +7,7 @@
     CONJ: simbolos -> !,%,&;
 
     // EXPRESIONES REGULARES
-    id -> . a | \" . \n \';
-    id -> . {letras} | {digitos} "hola";
+    id -> . | a b | \" * \n;
     
     %%
     
@@ -23,5 +22,5 @@
     COMENTARIO
     MULTILINEA
             !>
-    
+
 }

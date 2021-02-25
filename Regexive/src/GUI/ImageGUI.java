@@ -22,12 +22,13 @@ public class ImageGUI extends javax.swing.JFrame {
      * Creates new form ImageGUI
      */
     public ImageGUI() {
-        initComponents();
-        setLocationRelativeTo(null);        
+        initComponents();    
     }
     
     public void setImage(Icon image){  
+        this.setSize(image.getIconWidth(), image.getIconHeight());
         image_label.setIcon(image);
+        setLocationRelativeTo(null);    
     }
 
     /**
@@ -43,11 +44,14 @@ public class ImageGUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("img");
-        setCursor(new java.awt.Cursor(java.awt.Cursor.W_RESIZE_CURSOR));
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        setMaximumSize(new java.awt.Dimension(800, 600));
         setUndecorated(true);
 
         image_label.setBackground(new java.awt.Color(9, 11, 16));
-        image_label.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+        image_label.setToolTipText("Clic para cerrar la imagen");
+        image_label.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        image_label.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         image_label.setOpaque(true);
         image_label.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -65,6 +69,8 @@ public class ImageGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(image_label, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
         );
+
+        image_label.getAccessibleContext().setAccessibleDescription("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

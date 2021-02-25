@@ -1,3 +1,5 @@
+package Main;
+
 
 import GUI.MainGUI;
 
@@ -7,6 +9,8 @@ import GUI.MainGUI;
  */
 
 public class Main {
+    
+    public static String main_path = System.getProperty("user.dir") + "\\src";
 
     public static MainGUI gui = new MainGUI();
 

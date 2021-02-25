@@ -15,6 +15,9 @@ public class Scanner implements java_cup.runtime.Scanner {
     private final int YY_BOL = 65536;
     private final int YY_EOF = 65537;
 
+    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
+
     Symbol Simbolo(int linea, int columna, String lexema, String token, int s) {
         ArrayList<String> v = new ArrayList<>();
         v.add(String.valueOf(linea));
@@ -50,9 +53,6 @@ public class Scanner implements java_cup.runtime.Scanner {
     private int yyline;
     private boolean yy_at_bol;
     private int yy_lexical_state;
-
-    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
 
     public Scanner(java.io.Reader reader) {
         this();

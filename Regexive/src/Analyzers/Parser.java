@@ -205,13 +205,8 @@ public class Parser extends java_cup.runtime.lr_parser {
         expresion = new ArrayList<>();
     }
 
-    private void Termino(String operacion){
-        expresion.add(0, operacion);
-    }
-
-    private void Termino(String a, String b){
-        expresion.add(0, a);
-        expresion.add(0, b);
+    private void Termino(String a){
+        expresion.add(a);
     }
 
     private void Comparacion(String expresion, String string){
@@ -404,7 +399,10 @@ class CUP$Parser$actions {
           case 13: // EXPRESION_REGULAR ::= concat EXPRESION_REGULAR EXPRESION_REGULAR 
             {
               Object RESULT =null;
-		Termino(".");
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("EXPRESION_REGULAR",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -413,7 +411,10 @@ class CUP$Parser$actions {
           case 14: // EXPRESION_REGULAR ::= disy EXPRESION_REGULAR EXPRESION_REGULAR 
             {
               Object RESULT =null;
-		Termino("|");
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("EXPRESION_REGULAR",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -422,7 +423,10 @@ class CUP$Parser$actions {
           case 15: // EXPRESION_REGULAR ::= cerr_kleene EXPRESION_REGULAR 
             {
               Object RESULT =null;
-		Termino("*");
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("EXPRESION_REGULAR",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -431,7 +435,10 @@ class CUP$Parser$actions {
           case 16: // EXPRESION_REGULAR ::= cerr_positiva EXPRESION_REGULAR 
             {
               Object RESULT =null;
-		Termino("+");
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("EXPRESION_REGULAR",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -440,7 +447,10 @@ class CUP$Parser$actions {
           case 17: // EXPRESION_REGULAR ::= cerr_bool EXPRESION_REGULAR 
             {
               Object RESULT =null;
-		Termino("?");
+		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("EXPRESION_REGULAR",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -461,7 +471,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Termino(a);
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("TERMINO",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -473,7 +483,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Termino(a);
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("TERMINO",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -485,7 +495,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
-		Termino(a);
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("TERMINO",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -497,7 +507,7 @@ class CUP$Parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		String a = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		Termino(a);
+		expresion.add(0, a);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("TERMINO",8, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

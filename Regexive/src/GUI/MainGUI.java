@@ -5,8 +5,15 @@
  */
 package GUI;
 
+import Graphing.Graph;
+import static Main.Main.main_path;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
+import Structs.Node;
+import Structs.Tree;
+import Structs.FollowTable;
+import Structs.TransitionTable;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.io.BufferedReader;
@@ -34,6 +41,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import util.CreateChildNodes;
 import util.FileNode;
 
@@ -50,8 +58,9 @@ public class MainGUI extends javax.swing.JFrame {
     /**
      * Creates new form MiFrame
      */
+    
+    public Graph graph = new Graph(main_path+"\\data");
 
-    public static String main_path = System.getProperty("user.dir") + "\\src";
 
     public String file_name = "";
     public Boolean saved = true;
@@ -61,18 +70,33 @@ public class MainGUI extends javax.swing.JFrame {
         FlatMaterialDeepOceanContrastIJTheme.install();
         initComponents();
         setLocationRelativeTo(null);
-        this.setIconImage(new ImageIcon(getClass().getResource("/icon/open-file-icon.png")).getImage());
+        this.setIconImage(new ImageIcon(getClass().getResource("/icon/appicon.png")).getImage());
 
         unsaved_label.setVisible(false);
+        input_text.setTabSize(4);
 
-        File fileRoot = new File(main_path + "\\data\\");
+        updateTree();
+    }
+
+    private void updateTree() {
+        File fileRoot = new File(main_path + "\\data");
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new FileNode(fileRoot));
+
+        CreateChildNodes ccn = new CreateChildNodes(fileRoot, root);
+
         DefaultTreeModel model = new DefaultTreeModel(root);
         data_tree.setModel(model);
+        expandAllNodes(0, data_tree.getRowCount());
+    }
 
-        CreateChildNodes ccn
-            = new CreateChildNodes(fileRoot, root);
-        new Thread(ccn).start();
+    private void expandAllNodes(int startingIndex, int rowCount) {
+        for (int i = startingIndex; i < rowCount; ++i) {
+            data_tree.expandRow(i);
+        }
+
+        if (data_tree.getRowCount() != rowCount) {
+            expandAllNodes(rowCount, data_tree.getRowCount());
+        }
     }
 
     /**
@@ -96,10 +120,6 @@ public class MainGUI extends javax.swing.JFrame {
         analize_button = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         data_tree = new javax.swing.JTree();
-        image_label = new javax.swing.JLabel();
-        previous_button = new javax.swing.JToggleButton();
-        next_button = new javax.swing.JToggleButton();
-        image_combobox = new javax.swing.JComboBox<>();
         unsaved_label = new javax.swing.JLabel();
         clear_button = new javax.swing.JToggleButton();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -116,6 +136,7 @@ public class MainGUI extends javax.swing.JFrame {
         input_text.setColumns(20);
         input_text.setFont(new java.awt.Font("Fira Code", 0, 12)); // NOI18N
         input_text.setRows(5);
+        input_text.setText("No hay archivo de entrada\nCarga un archivo OLC o crea uno nuevo en la pestaña 'Archivo'.");
         input_text.setEnabled(false);
         input_text.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -124,9 +145,10 @@ public class MainGUI extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(input_text);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 2, 12)); // NOI18N
-        jLabel1.setText("Archivo de entrada:");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        jLabel1.setText("Entrada:");
 
+        file_name_label.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
         file_name_label.setText("ninguno");
 
         output_text.setEditable(false);
@@ -136,7 +158,8 @@ public class MainGUI extends javax.swing.JFrame {
         output_text.setName("output_text"); // NOI18N
         jScrollPane4.setViewportView(output_text);
 
-        jLabel2.setText("Salida");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        jLabel2.setText("Salida:");
 
         generate_button.setText("Generar Autómata");
         generate_button.setEnabled(false);
@@ -154,30 +177,16 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
+        data_tree.setToolTipText("Selecciona un archivo para abrirlo");
         data_tree.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jScrollPane1.setViewportView(data_tree);
-
-        image_label.setBackground(new java.awt.Color(9, 11, 16));
-        image_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        image_label.setToolTipText("Clic para ver en grande");
-        image_label.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(132, 255, 255), 3, true));
-        image_label.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
-        image_label.setOpaque(true);
-        image_label.setVerifyInputWhenFocusTarget(false);
-        image_label.addMouseListener(new java.awt.event.MouseAdapter() {
+        data_tree.setSelectionRow(1);
+        data_tree.setToggleClickCount(1);
+        data_tree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                image_labelMouseClicked(evt);
+                data_treeMouseClicked(evt);
             }
         });
-
-        previous_button.setText("Anterior");
-        previous_button.setEnabled(false);
-
-        next_button.setText("Siguiente");
-        next_button.setEnabled(false);
-
-        image_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Árboles", "Siguientes", "Transiciones", "Autómatas" }));
-        image_combobox.setEnabled(false);
+        jScrollPane1.setViewportView(data_tree);
 
         unsaved_label.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         unsaved_label.setText("*");
@@ -194,72 +203,59 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addComponent(analize_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57)
-                .addComponent(generate_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(previous_button, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(58, 58, 58)
-                .addComponent(next_button, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(101, 101, 101))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(file_name_label)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(unsaved_label)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(image_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(186, 186, 186))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(217, 217, 217)
+                                .addComponent(analize_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(80, 80, 80)
+                                .addComponent(generate_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 278, Short.MAX_VALUE)
+                                .addComponent(clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(49, 49, 49))
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane3)
                                 .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(image_label, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(30, 30, 30))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addComponent(jLabel2)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(file_name_label)
-                        .addComponent(unsaved_label, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(image_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(file_name_label)
+                    .addComponent(unsaved_label, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(image_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(analize_button)
                     .addComponent(generate_button)
-                    .addComponent(previous_button)
-                    .addComponent(next_button))
-                .addGap(11, 11, 11)
+                    .addComponent(clear_button))
+                .addGap(5, 5, 5)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(clear_button)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Archivo");
@@ -350,20 +346,7 @@ public class MainGUI extends javax.swing.JFrame {
                 Output("(" + v.get(0) + ", " + v.get(1) + ") " + v.get(2) + " :  " + v.get(3));
             }
 
-            if (!Errores_lexicos.isEmpty()) {
-                Output_error("##Errores léxicos encontrados");
-
-                for (ArrayList<String> v : Errores_lexicos) {
-                    Output_error("(" + v.get(0) + ", " + v.get(1) + ") " + v.get(2));
-                }
-
-                Output_error("No se puede realizar el análisis léxico");
-
-                // generar reporte de analisis lexico
-                return;
-            }
-
-            Output_title("ANÁLISIS SINTÁCTICOS");
+            Output_title("ANÁLISIS SINTÁCTICO");
 
             ArrayList<ArrayList<String>> Conjuntos = parser.getConjuntos();
             ArrayList<ArrayList<String>> Expresiones = parser.getExpresiones();
@@ -381,7 +364,7 @@ public class MainGUI extends javax.swing.JFrame {
                 String temp = "";
 
                 for (String s : v) {
-                    temp += s + "  ";
+                    temp += s + " ";
                 }
 
                 Output(temp);
@@ -393,22 +376,40 @@ public class MainGUI extends javax.swing.JFrame {
                 Output(v.get(0) + " :  " + v.get(1));
             }
 
-            // realizar metodo del arbol y demas
-            // comprobar errores sintacticos
-        } catch (Exception ex) {
-            try {
-                Output_error("Error fatal");
-            } catch (BadLocationException ex1) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex1);
+            for (ArrayList<String> expresion : Expresiones) {
+                
+                String id = expresion.remove(0);
+                Tree tree = new Tree(expresion); // CREA EL ARBOL
+                Node root = tree.getRoot();
+
+                root.getNode(); // DETERMINA SI LOS NODOS SON ANULABLES, SUS PRIMEROS Y ULTIMOS
+                root.follow();
+
+                System.out.println("==============================TABLA SIGUIENTES==============================");
+                FollowTable ft = new FollowTable();
+                ft.printTable(tree.getTable());
+                TransitionTable tran = new TransitionTable(root, tree.getTable(), tree.getLeaves()); // bug
+                System.out.println("=============================TABLA TRANSICIONES=============================");
+                tran.getTable();
+                
+                
+                System.out.println("PRUEBASPRUEBASPRUEBASPRUEBAS\n");
+                
+                graph.graphTree(tree);
+                
+                
             }
-            System.out.println(" >> " + ex.getCause());
+
+            Report(Errores_lexicos, Errores_sintacticos);
+
+        } catch (Exception e) {
+            Output_error("Error fatal");
+            System.out.println(e.getCause());
         }
-
-
     }//GEN-LAST:event_analize_buttonActionPerformed
 
     private void generate_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_buttonActionPerformed
-
+//        data_tree.expandRow(0);
     }//GEN-LAST:event_generate_buttonActionPerformed
 
     private void generate_dialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_dialogActionPerformed
@@ -419,7 +420,36 @@ public class MainGUI extends javax.swing.JFrame {
         output_text.setText("");
     }//GEN-LAST:event_clear_buttonActionPerformed
 
-    // ================================>>ACTIONS<<=========================================
+    private void data_treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_data_treeMouseClicked
+        TreePath sel = data_tree.getPathForLocation(evt.getX(), evt.getY());
+        if (sel != null) {
+            String path = "";
+
+            for (Object o : sel.getPath()) {
+                path += "\\" + o;
+            }
+
+            File file_temp = new File(main_path + path);
+
+            if (file_temp.getName().toLowerCase().endsWith(".olc")) {
+                System.out.println("Es un OLC");
+            } else if (file_temp.getName().toLowerCase().endsWith(".png") || file_temp.getName().toLowerCase().endsWith(".jpg")) {
+
+                ImageGUI img_frame = new ImageGUI();
+                img_frame.setImage(new ImageIcon(file_temp.getAbsolutePath()));
+                img_frame.setVisible(true);
+
+            } else if (file_temp.getName().toLowerCase().endsWith(".html")) {
+                try {
+                    Desktop.getDesktop().browse(file_temp.toURI());
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_data_treeMouseClicked
+
+// ================================>>ACTIONS<<=========================================
     private void new_dialogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_new_dialogActionPerformed
 
         if (saved == false && input_text.isEnabled()) {
@@ -487,15 +517,10 @@ public class MainGUI extends javax.swing.JFrame {
                 Output_success("Se cargó el archivo " + file.toString());
             }
         } catch (FileNotFoundException ex) {
-            try {
-                Output_error("No se pudo cargar el archivo");
-            } catch (BadLocationException ex1) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex1);
-            }
+            Output_error("No se pudo cargar el archivo");
         } catch (IOException ex) {
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BadLocationException ex) {
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainGUI.class
+                .getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (inputStream != null) {
                 try {
@@ -508,6 +533,10 @@ public class MainGUI extends javax.swing.JFrame {
     }// GEN-LAST:event_open_dialogActionPerformed
 
     private void save_dialogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_save_dialogActionPerformed
+        if (!input_text.isEnabled()) {
+            Output_error("No hay archivo para guardar");
+            return;
+        }
 
         try {
             if (file_name.isEmpty()) {
@@ -522,38 +551,27 @@ public class MainGUI extends javax.swing.JFrame {
                     return;
                 }
             }
-        } catch (BadLocationException ex) {
-            try {
-                Output_error("No se pudo guardar el archivo");
-            } catch (BadLocationException ex1) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex1);
-            }
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Output_error("No se pudo guardar el archivo");
+            Logger.getLogger(MainGUI.class
+                .getName()).log(Level.SEVERE, null, ex);
         }
 
     }// GEN-LAST:event_save_dialogActionPerformed
 
-    private void saveas_dialogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveas_dialogActionPerformed
-        try {
-            if (saveFileAs() == true) {
-                Output_success("Se guardó exitosamente");
-                return;
-            }
-
-            Output_error("No se pudo guardar el archivo");
-
-        } catch (BadLocationException ex) {
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+    private void saveas_dialogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveas_dialogActionPerformed      
+        if (!input_text.isEnabled()) {
+            Output_error("No hay archivo para guardar");
+            return;
         }
+
+        if (saveFileAs() == true) {
+            Output_success("Se guardó exitosamente");
+            return;
+        }
+
+        Output_error("No se pudo guardar el archivo");
     }// GEN-LAST:event_saveas_dialogActionPerformed
-
-    private void image_labelMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_image_labelMouseClicked
-        if (image_label.getIcon() != null) {
-            ImageGUI img_frame = new ImageGUI();
-            img_frame.setImage(image_label.getIcon());
-            img_frame.setVisible(true);
-        }
-    }// GEN-LAST:event_image_labelMouseClicked
 
     private void input_textKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_input_textKeyTyped
         if (saved == true) {
@@ -566,12 +584,17 @@ public class MainGUI extends javax.swing.JFrame {
     }// GEN-LAST:event_input_textKeyTyped
 
     // ================================>>MISC<<=========================================
-    public void Output(String str) throws BadLocationException {
+    public void Output(String str) {
         StyledDocument document = (StyledDocument) output_text.getDocument();
-        document.insertString(document.getLength(), str + "\n", null);
+        try {
+            document.insertString(document.getLength(), str + "\n", null);
+        } catch (BadLocationException ex) {
+            System.out.println(str);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void Output_highlight(String str) throws BadLocationException {
+    public void Output_highlight(String str) {
         StyledDocument document = (StyledDocument) output_text.getDocument();
 
         Style style = output_text.addStyle("highlight", null);
@@ -580,10 +603,16 @@ public class MainGUI extends javax.swing.JFrame {
         StyleConstants.setFontSize(style, 14);
 
         str = ">>" + str;
-        document.insertString(document.getLength(), str + "\n", style);
+
+        try {
+            document.insertString(document.getLength(), str + "\n", style);
+        } catch (BadLocationException ex) {
+            System.out.println(str);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void Output_title(String str) throws BadLocationException {
+    public void Output_title(String str) {
         StyledDocument document = (StyledDocument) output_text.getDocument();
 
         Style style = output_text.addStyle("success", null);
@@ -602,25 +631,40 @@ public class MainGUI extends javax.swing.JFrame {
             str = str + "=";
         }
 
-        document.insertString(document.getLength(), str + "\n", style);
+        try {
+            document.insertString(document.getLength(), str + "\n", style);
+        } catch (BadLocationException ex) {
+            System.out.println(str);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void Output_success(String str) throws BadLocationException {
+    public void Output_success(String str) {
         StyledDocument document = (StyledDocument) output_text.getDocument();
 
         Style style = output_text.addStyle("success", null);
         StyleConstants.setForeground(style, Color.green);
 
-        document.insertString(document.getLength(), str + "\n", style);
+        try {
+            document.insertString(document.getLength(), str + "\n", style);
+        } catch (BadLocationException ex) {
+            System.out.println(str);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void Output_error(String str) throws BadLocationException {
+    public void Output_error(String str) {
         StyledDocument document = (StyledDocument) output_text.getDocument();
 
         Style style = output_text.addStyle("error", null);
         StyleConstants.setForeground(style, Color.red);
 
-        document.insertString(document.getLength(), str + "\n", style);
+        try {
+            document.insertString(document.getLength(), str + "\n", style);
+        } catch (BadLocationException ex) {
+            System.out.println(str);
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setFileName(String text) {
@@ -721,6 +765,109 @@ public class MainGUI extends javax.swing.JFrame {
         return resultStringBuilder.toString();
     }
 
+    private void Report(ArrayList<ArrayList<String>> lexicos, ArrayList<ArrayList<String>> sintacticos) {
+
+        if (!lexicos.isEmpty() || !sintacticos.isEmpty()) {
+
+            File file_temp;
+            BufferedWriter writer = null;
+            String temp;
+
+            ArrayList<String> header = new ArrayList<>();
+            header.add("Tipo");
+            header.add("Línea");
+            header.add("Descripción");
+            header.add("Línea");
+            header.add("Columna");
+
+            try {
+                file_temp = new File(main_path + "\\data\\ERRORES_201901698\\" + file_name + ".html");
+                file_temp.createNewFile();
+                writer = new BufferedWriter(new FileWriter(file_temp, false));
+
+                temp = "<!DOCTYPE html>\n"
+                    + "\t<html>\n"
+                    + "\t\t<head>\n"
+                    + "\t\t\t<title>Errores</title>\n"
+                    + "\t\t\t<link rel='stylesheet' type='text/css' href='style.css'/>\n"
+                    + "\t\t</head>\n"
+                    + "\t\t<body>\n";
+                writer.write(temp);
+
+                temp = "\t\t\t<table class='container'>\n"
+                    + "\t\t\t\t<thead>\n"
+                    + "\t\t\t\t\t<tr>\n";
+                writer.write(temp);
+
+                temp = "";
+                for (String h : header) {
+                    temp += "\t\t\t\t\t\t<th><h1>" + h + "</h1></th>\n";
+                }
+                writer.write(temp);
+
+                temp = "\t\t\t\t\t</tr>\n"
+                    + "\t\t\t\t</thead>\n\n"
+                    + "\t\t\t\t<tbody>\n";
+                writer.write(temp);
+
+                int index = 1;
+                if (!lexicos.isEmpty()) {
+                    for (int i = 0; i < lexicos.size(); i++) {
+                        temp = "\t\t\t\t\t<tr>\n"
+                            + "\t\t\t\t\t\t<td>" + index + "</td>\n"
+                            + "\t\t\t\t\t\t<td>Léxico</td>\n";
+
+                        temp += "\t\t\t\t\t\t<td>El lexema '" + lexicos.get(i).get(2) + "' no pertenece al lenguaje</td>\n"
+                            + "\t\t\t\t\t\t<td>" + lexicos.get(i).get(0) + "</td>\n"
+                            + "\t\t\t\t\t\t<td>" + lexicos.get(i).get(1) + "</td>\n";
+
+                        temp += "\t\t\t\t\t</tr>\n\n";
+
+                        writer.write(temp);
+                        index += 1;
+                    }
+                }
+
+                if (!sintacticos.isEmpty()) {
+                    for (int i = 0; i < sintacticos.size(); i++) {
+                        temp = "\t\t\t\t\t<tr>\n"
+                            + "\t\t\t\t\t\t<td>" + index + "</td>\n"
+                            + "\t\t\t\t\t\t<td>Sintáctico</td>\n";
+
+                        temp += "\t\t\t\t\t\t<td>No se esperaba '" + sintacticos.get(i).get(2) + "'</td>\n"
+                            + "\t\t\t\t\t\t<td>" + sintacticos.get(i).get(0) + "</td>\n"
+                            + "\t\t\t\t\t\t<td>" + sintacticos.get(i).get(1) + "</td>\n";
+
+                        temp += "\t\t\t\t\t</tr>\n\n";
+
+                        writer.write(temp);
+                        index += 1;
+                    }
+                }
+
+                temp = "\t\t\t\t</tbody>\n"
+                    + "\t\t\t</table>\n"
+                    + "\t\t</body>\n"
+                    + "\t</html>";
+                writer.write(temp);
+
+                writer.close();
+                updateTree();
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class
+                        .getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
+
+    }
+
     // =================================>>MAIN<<===========================================
     /**
      * @param args the command line arguments
@@ -772,8 +919,6 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JLabel file_name_label;
     private javax.swing.JToggleButton generate_button;
     private javax.swing.JMenuItem generate_dialog;
-    private javax.swing.JComboBox<String> image_combobox;
-    private javax.swing.JLabel image_label;
     private javax.swing.JTextArea input_text;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -784,10 +929,8 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JMenuItem new_dialog;
-    private javax.swing.JToggleButton next_button;
     private javax.swing.JMenuItem open_dialog;
     private javax.swing.JTextPane output_text;
-    private javax.swing.JToggleButton previous_button;
     private javax.swing.JMenuItem save_dialog;
     private javax.swing.JMenuItem saveas_dialog;
     private javax.swing.JLabel unsaved_label;
