@@ -1,4 +1,4 @@
-# Gramática
+# Gramática de Regexive
 
 ## Alfabeto
 
@@ -74,7 +74,7 @@ EXPRESION_REGULAR => concat EXPRESION_REGULAR EXPRESION_REGULAR
                    | TERMINO
 
 TERMINO => L
-		 | string
+	 | string
          | llaveA id llaveB
          | especial
 
