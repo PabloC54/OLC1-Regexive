@@ -1,26 +1,19 @@
 {
     // CONJUNTOS
-    CONJ: letra -> a,b,c;
-    CONJ: letras -> d~z;
-    CONJ: digito -> 0,1;
-    CONJ: digitos -> 2~9;
-    CONJ: simbolos -> !,%,&;
+    conj: Letra -> d~z;  	
+    CONJ: Digito -> 0~9;
+    CONJ: Simbolo -> !~%;
 
     // EXPRESIONES REGULARES
-    id -> . | a b | \" * \n;
+    identificador -> . {Letra} | {Letra} {Digito};
+    numero_telefonico -> .......{Digito}{Digito}{Digito}{Digito}{Digito}{Digito}{Digito}{Digito};
+	string -> . . | \" \' * | | {Letra} {Digito} {Simbolo} | \" \';
     
     %%
-    
+	%%
+
+	// COMPARACIONES
     ExpReg1 : "primerLexemaCokoa";
     ExpresionReg2 : "34.44";
-
-
-    <!COMENTARIO!>
-
-    <!
-    
-    COMENTARIO
-    MULTILINEA
-            !>
 
 }

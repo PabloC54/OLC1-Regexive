@@ -24,12 +24,14 @@
 package Graphing;
 
 import Structs.Node;
+import Structs.Transition;
+import Structs.TransitionTable;
 import Structs.Tree;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.file.Files;
+import java.util.ArrayList;
 
 /**
  *
@@ -45,88 +47,170 @@ public class Graph {
         this.main_path = main_path;
     }
 
+    public boolean graphTree(Tree tree, String folder, String id) throws IOException {
+        try {
+            String name = main_path + "\\ARBOLES_201901698\\" + folder;
+            file = new File(name);
+            file.mkdir();
 
-    /*
-    
-    digraph G {
-    nodesep=0.4; //was 0.8
-    ranksep=0.5;
+            name += "\\" + id;
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
 
-    {node[style=invis,label=""]; cx_30;
-    }
-    {node[style=invis, label="", width=.1]; ocx_45; ocx_20;
-    }
+            Node root = tree.getRoot();
 
-    {rank=same; 20; 45; cx_30}
-    {rank=same; 10; 25; ocx_20}
-    {rank=same; 40; 50; ocx_45}
+            String s = " digraph G {\n"
+                + "    nodesep=0.4;\n"
+                + "    ranksep=0.5;\n\n"
+                + printNodes(root, "")
+                + "} ";
 
-    30 -> 20;
-    30 -> 45;
-    20 -> 10;
-    20 -> 25;
+            writer.write(s);
+            writer.close();
 
-    45 -> 40;
-    45 -> 50;
+            String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
+            Runtime.getRuntime().exec(command);
 
-} 
-    
-     */
-    public void graphTree(Tree tree) throws IOException {
-
-        Node root = tree.getRoot();
-
-        file = new File(main_path+"\\nombre.dot");
-        writer = new FileWriter(file);
-
-        file.createNewFile();
-
-        String h = " digraph G {\n"
-            + "    nodesep=0.4; //was 0.8\n"
-            + "    ranksep=0.5;\n"
-            + "\n"
-            + "    {node[style=invis,label=\"\"]; cx_30;\n"
-            + "    }\n"
-            + "    {node[style=invis, label=\"\", width=.1]; ocx_45; ocx_20;\n"
-            + "    }\n"
-            + "\n"
-            + "    {rank=same; 20; 45; cx_30}\n"
-            + "    {rank=same; 10; 25; ocx_20}\n"
-            + "    {rank=same; 40; 50; ocx_45}\n"
-            + "\n"
-            + "    30 -> 20;\n"
-            + "    30 -> 45;\n"
-            + "    20 -> 10;\n"
-            + "    20 -> 25;\n"
-            + "\n"
-            + "    45 -> 40;\n"
-            + "    45 -> 50;\n"
-            + "\n"
-            + "} ";
-
-        writer.write(h);
-        
-        Runtime.getRuntime().exec("dot -Tpng "+main_path+"\\nombre.dot -o "+main_path+"\\nombre.png");
-        System.out.println("ahuevo");
-
-        printNode(root);
-
-        return;
+//        Files.deleteIfExists(file.toPath());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    private void printNode(Node node) {
+    private String printNodes(Node node, String index) {
 
-        System.out.println(node.lexeme);
+        String temp_str = "";
+
+        if (node == null) {
+            return temp_str;
+        }
+
+        temp_str += "node_" + index + " [fontsize=13 shape=box fontname = \"helvetica\" label=\"" + node.first + " " + node.lexeme + " " + node.last + "\n" + node.anullable + "\"];\n";
+
+        String left_i = "l", right_i = "r";
 
         if (node.left != null) {
-            System.out.println("izq->");
-            printNode(node.left);
+            temp_str += "node_" + index + " -> node_" + index + left_i + ";\n";
+        }
+        if (node.right != null) {
+            temp_str += "node_" + index + " -> node_" + index + right_i + ";\n";
         }
 
-        if (node.right != null) {
-            System.out.println("rgt->");
-            printNode(node.right);
+        return temp_str + printNodes(node.left, index + left_i) + printNodes(node.right, index + right_i);
+    }
+
+    public boolean graphFollowTable(ArrayList<ArrayList> table, String folder, String id) throws IOException {
+        try {
+            String name = main_path + "\\SIGUIENTES_201901698\\" + folder;
+            file = new File(name);
+            file.mkdir();
+
+            name += "\\" + id;
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
+
+            String s = " digraph G {\n"
+                + " node [label=\"\\N\", fontsize=13 shape=plaintext fontname = \"helvetica\"];\n"
+                + " Foo [label=<\n"
+                + "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n"
+                + "  <tr><td><i>Estado</i></td><td><i>Siguientes</i></td></tr>\n";
+
+            for (ArrayList v : table) {
+                s += "<tr><td align=\"left\">" + v.get(0) + "  " + v.get(1) + "</td><td>" + v.get(2) + "</td></tr>\n";
+            }
+
+            s += "</table>>];"
+                + "} ";
+
+            writer.write(s);
+            writer.close();
+
+            String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
+            Runtime.getRuntime().exec(command);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        System.out.println("<-back");
+    }
+
+    public boolean graphTransitionTable(Tree tree, String folder, String id) throws IOException {
+        try {
+            String name = main_path + "\\TRANSICIONES_201901698\\" + folder;
+            file = new File(name);
+            file.mkdir();
+
+            name += "\\" + id;
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
+
+            TransitionTable tran = new TransitionTable(tree.getRoot(), tree.getTable(), tree.getLeaves());
+
+            String s = " digraph G {\n"
+                + " node [label=\"\\N\" fontsize=13 shape=plaintext fontname = \"helvetica\"];\n"
+                + " Foo [label=<\n"
+                + "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n"
+                + "  <tr><td><i>Estado</i></td><td><i>Transición</i></td><td><i>Final</i></td></tr>\n"; // cambiar
+
+            for (ArrayList<ArrayList> state : tran.states) {
+                String temp = "[";
+                for (Object tr : (ArrayList) state.get(2)) {
+                    Transition t = (Transition) tr;
+                    temp += t.toString() + ", ";
+                }
+                temp += "]";
+                temp = temp.replace(", ]", "]");
+
+                s += "<tr><td>" + state.get(0) + "  " + state.get(1) + "</td><td>" + temp + "</td><td>" + state.get(3) + "</td></tr>\n";
+            }
+
+            s += "</table>>];\n"
+                + "} ";
+
+            writer.write(s);
+            writer.close();
+
+            String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
+            Runtime.getRuntime().exec(command);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean graphAFND(String folder, String id) throws IOException {
+        try {
+            String name = main_path + "\\AFND_201901698\\" + folder;
+            file = new File(name);
+            file.mkdir();
+
+            name += "\\" + id;
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean graphAFD(String folder, String id) throws IOException {
+        try {
+            String name = main_path + "\\AFD_201901698\\" + folder;
+            file = new File(name);
+            file.mkdir();
+
+            name += "\\" + id;
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -14,28 +14,29 @@ import java.util.ArrayList;
 
 %{
 
+    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
+
     Symbol Simbolo(int linea, int columna, String lexema, String token, int s){
+        ArrayList<String> v = new ArrayList<>();
+        v.add(String.valueOf(linea));
+        v.add(String.valueOf(columna));
+        v.add(token);
+        v.add(lexema);
 
-    ArrayList<String> v = new ArrayList<>();
-    v.add(String.valueOf(linea));
-    v.add(String.valueOf(columna));
-    v.add(token);
-    v.add(lexema);
+        Simbolos.add(v);
 
-    Simbolos.add(v);
+        return new Symbol(s, linea, columna, yytext());
+    }
 
-    return new Symbol(s, linea, columna, yytext());
-  }
+    void ErrorLexico(int linea, int columna, String lexema){    
+        ArrayList<String> v = new ArrayList<>();
+        v.add(String.valueOf(linea));
+        v.add(String.valueOf(columna));
+        v.add(lexema);
 
-  void ErrorLexico(int linea, int columna, String lexema){
-    
-    ArrayList<String> v = new ArrayList<>();
-    v.add(String.valueOf(linea));
-    v.add(String.valueOf(columna));
-    v.add(lexema);
-
-    Errores.add(v);
-  }
+        Errores.add(v);
+    }
 
     public ArrayList getSimbolos(){
         return Simbolos;
@@ -44,15 +45,11 @@ import java.util.ArrayList;
     public ArrayList getErrores(){
         return Errores;
     }
-
 %}
-
 
 %init{
     yyline = 1;
-    yychar = 1;
-    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
+    yychar = 0;
 %init}
 
 L=[a-zA-ZñÑ]
@@ -73,7 +70,7 @@ cerr_kleene="*"
 cerr_positiva="+"
 cerr_bool="?"
 especial=(\\n)|(\\')|(\\\")
-porcentajes="%%"
+porcentajes="%%"{blanco}*\n+{blanco}*"%%"
 conj="conj"
 id={L}({L}|{D}|"_")*
 string=\"(.|{blanco})*\"
@@ -82,9 +79,9 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 
 %%
 
-{comentario}                {yychar=1;}
-{comentario_multilinea}     {yychar=1;}
-\n                          {yychar=1;}
+{comentario}                {yychar=0;}
+{comentario_multilinea}     {yychar=0;}
+\n                          {yychar=0;}
 {blanco}                    {}
 
 {llaveA}        {return Simbolo(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
@@ -111,4 +108,3 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 . {
   ErrorLexico(yyline, yychar, yytext());
 }
-

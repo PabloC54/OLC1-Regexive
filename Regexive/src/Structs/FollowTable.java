@@ -46,10 +46,4 @@ public class FollowTable {
         result.add(new ArrayList());
         return result;
     }
-    
-    public void printTable(ArrayList<ArrayList> table){
-        for(ArrayList item : table){
-            System.out.println(item.get(0) + " - " + item.get(1) + " - " + item.get(2) );
-        }
-    }
 }

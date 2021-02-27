@@ -11,18 +11,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class CreateChildNodes {
 
     private DefaultMutableTreeNode root;
-
     private File fileRoot;
 
     public CreateChildNodes(File fileRoot,
         DefaultMutableTreeNode root) {
         this.fileRoot = fileRoot;
         this.root = root;
-        createChildren(this.fileRoot, this.root);
+        createChildren(fileRoot, root);
     }
 
-
-    private void createChildren(File fileRoot, DefaultMutableTreeNode node) {
+    public void createChildren(File fileRoot, DefaultMutableTreeNode node) {
         File[] files = fileRoot.listFiles();
         if (files == null) {
             return;
@@ -31,7 +29,7 @@ public class CreateChildNodes {
         for (File file : files) {
             if (file.isFile()) {
                 String name = file.getName().toLowerCase();
-                if (!name.endsWith(".jpg") && !name.endsWith(".png") && !name.endsWith(".html")) {
+                if (!name.endsWith(".jpg") && !name.endsWith(".png") && !name.endsWith(".html") && !name.endsWith(".json")) {
                     continue;
                 }
             }

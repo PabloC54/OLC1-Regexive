@@ -76,11 +76,13 @@ public class Scanner implements java_cup.runtime.Scanner {
         yy_buffer_index = 0;
         yy_buffer_start = 0;
         yy_buffer_end = 0;
+        yychar = 0;
+        yyline = 0;
         yy_at_bol = true;
         yy_lexical_state = YYINITIAL;
 
         yyline = 1;
-        yychar = 1;
+        yychar = 0;
     }
 
     private boolean yy_eof_done = false;
@@ -309,14 +311,18 @@ public class Scanner implements java_cup.runtime.Scanner {
         /* 52 */ YY_NOT_ACCEPT,
         /* 53 */ YY_NOT_ACCEPT,
         /* 54 */ YY_NOT_ACCEPT,
-        /* 55 */ YY_NO_ANCHOR,
-        /* 56 */ YY_NO_ANCHOR,
-        /* 57 */ YY_NO_ANCHOR,
-        /* 58 */ YY_NO_ANCHOR,
-        /* 59 */ YY_NOT_ACCEPT,
+        /* 55 */ YY_NOT_ACCEPT,
+        /* 56 */ YY_NOT_ACCEPT,
+        /* 57 */ YY_NOT_ACCEPT,
+        /* 58 */ YY_NOT_ACCEPT,
+        /* 59 */ YY_NO_ANCHOR,
         /* 60 */ YY_NO_ANCHOR,
         /* 61 */ YY_NO_ANCHOR,
-        /* 62 */ YY_NO_ANCHOR
+        /* 62 */ YY_NO_ANCHOR,
+        /* 63 */ YY_NOT_ACCEPT,
+        /* 64 */ YY_NO_ANCHOR,
+        /* 65 */ YY_NO_ANCHOR,
+        /* 66 */ YY_NO_ANCHOR
     };
     private int yy_cmap[] = unpackFromString(1, 65538,
         "2:9,3,4,2:2,0,2:18,16,6,30,17:2,31,17,29,17:2,24,25,11,21,22,1,15:10,19,20,"
@@ -324,29 +330,31 @@ public class Scanner implements java_cup.runtime.Scanner {
         + ",34,18:3,28,33,18:11,8,23,9,13,2:50,12,2:17,14,2:31,14,2:7988,10,2:57319,36"
         + ":2")[0];
 
-    private int yy_rmap[] = unpackFromString(1, 63,
-        "0,1,2:2,3:2,4,3:7,2,5,2:2,6,2:2,7,8,9,10,5,11,2,3,12,2:3,13,14,15,16,3,10,1"
-        + "7,18,19,20,21,22,23,24,25,26,27,28,29,6,30,31,32,33,34,6,35,36,37,38")[0];
+    private int yy_rmap[] = unpackFromString(1, 67,
+        "0,1,2:2,3:2,4,3:7,2,5,2:2,6,2,7,8,9,10,5,2,11,2,3,12,2:3,13,14,15,16,3,10,1"
+        + "7,18,19,20,21,22,23,24,25,26,27,28,29,6,30,31,32,33,34,35,36,37,38,6,39,40,"
+        + "41,42")[0];
 
-    private int yy_nxt[][] = unpackFromString(39, 37,
-        "-1,1,27,2,3,34,37:2,4,5,6,37,55,27,60,39,28,37,61,7,8,41,9,10,11,12,13,43,6"
-        + "1,37,45,47,62,61:2,37,14,-1,26,-1:9,33,-1,36,-1:71,33,-1,36,-1:33,15,40,15,"
+    private int yy_nxt[][] = unpackFromString(43, 37,
+        "-1,1,27,2,3,34,37:2,4,5,6,37,59,27,64,39,28,37,65,7,8,41,9,10,11,12,13,43,6"
+        + "5,37,45,47,66,65:2,37,14,-1,26,-1:9,33,-1,36,-1:71,33,-1,36,-1:33,15,40,15,"
         + "42,15:2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,15,-1"
-        + ":3,15:4,-1:2,52:3,-1,52:25,18,52:5,-1:12,33,-1:36,40,-1:36,48,-1:26,38:5,54"
-        + ",38:29,-1:2,26:3,20,26:31,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,15,-1:3,15:2,"
-        + "25,15,-1:2,21,-1:3,21:5,-1,21,-1:4,21:20,-1:7,38,-1:4,33,-1,36,-1:24,52:3,-"
+        + ":3,15:4,-1:2,52:3,-1,52:25,18,52:5,-1:12,33,-1:36,40,-1:36,48,-1:26,38:5,55"
+        + ",38:29,-1:2,26:3,19,26:31,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,15,-1:3,15:2,"
+        + "24,15,-1:2,20,-1:3,20:5,-1,20,-1:4,20:20,-1:7,38,-1:4,33,-1,36,-1:24,52:3,-"
         + "1,52:6,53,52:18,18,52:5,-1:2,30,-1:3,30:5,-1,30,-1:4,30:20,-1:12,48,-1,49,-"
-        + "1:33,22,-1,22,-1,22,-1:3,22,-1:9,22,-1:3,22:3,-1:9,16,-1:3,33,-1,36,-1:33,3"
+        + "1:33,21,-1,21,-1,21,-1:3,21,-1:9,21,-1:3,21:3,-1:9,16,-1:3,33,-1,36,-1:33,3"
         + "1,-1:3,31,-1:3,31,-1:9,31,-1:3,31:3,-1:13,33,-1,36,-1:14,17:3,-1:18,31,-1,3"
-        + "1,-1:3,31,-1:9,31,-1:3,31:3,-1:3,52:3,-1,52:6,53,52,59,52:16,18,52:5,-1:11,"
-        + "31,-1,31,-1,31,-1:3,31,-1:9,31,-1:3,31:3,-1:13,33,-1,36,-1:17,19,-1:20,23,-"
-        + "1:36,32,-1:22,21,-1:3,21:5,22,21,22,-1,22,-1,21:2,57,21:9,57,21:3,57:3,21,-"
+        + "1,-1:3,31,-1:9,31,-1:3,31:3,-1:3,52:3,-1,52:6,53,52,63,52:16,18,52:5,-1:11,"
+        + "31,-1,31,-1,31,-1:3,31,-1:9,31,-1:3,31:3,-1:13,33,-1,36,-1:17,54,-1:20,22,-"
+        + "1:36,32,-1:22,20,-1:3,20:5,21,20,21,-1,21,-1,20:2,61,20:9,61,20:3,61:3,20,-"
         + "1:2,30,-1:3,30:5,31,30,31,-1,31,-1,30:2,31,30:9,31,30:3,31:3,30,-1:2,35,52:"
-        + "2,-1,35:5,52,35,52:4,35:20,-1:2,38:5,54,24,38:28,-1:11,15,40,15,44,15:2,-1:"
-        + "2,15,-1:9,15,-1:3,15:4,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,29,-1:3,15:4,-1:"
-        + "12,50,-1:26,58,52:2,-1,58:5,52,58,52:4,58:20,-1:11,15,40,15,46,15:2,-1:2,15"
-        + ",-1:9,15,-1:3,15:4,-1:11,15,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,1"
-        + "5,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15,56,15:2,-1");
+        + "2,-1,35:5,52,35,52:4,35:20,-1:4,54,56,-1:11,54,-1:21,38:5,55,23,38:28,-1:4,"
+        + "57,56,-1:11,57,-1:14,58,-1:8,57,-1:12,57,-1:14,58,-1:36,25,-1:15,15,40,15,4"
+        + "4,15:2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,15,-1,15,-1,15:2,-1:2,15,-1:9,29,-1:"
+        + "3,15:4,-1:12,50,-1:26,62,52:2,-1,62:5,52,62,52:4,62:20,-1:11,15,40,15,46,15"
+        + ":2,-1:2,15,-1:9,15,-1:3,15:4,-1:11,15,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15"
+        + ":4,-1:11,15,50,15,51,15:2,-1:2,15,-1:9,15,-1:3,15,60,15:2,-1");
 
     public Symbol next_token()
         throws java.io.IOException {
@@ -403,7 +411,7 @@ public class Scanner implements java_cup.runtime.Scanner {
                         case -3:
                             break;
                         case 3: {
-                            yychar = 1;
+                            yychar = 0;
                         }
                         case -4:
                             break;
@@ -482,37 +490,37 @@ public class Scanner implements java_cup.runtime.Scanner {
                         case -19:
                             break;
                         case 19: {
-                            return Simbolo(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);
+                            yychar = 0;
                         }
                         case -20:
                             break;
                         case 20: {
-                            yychar = 1;
+                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
                         }
                         case -21:
                             break;
                         case 21: {
-                            return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
+                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
                         }
                         case -22:
                             break;
                         case 22: {
-                            return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
+                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
                         }
                         case -23:
                             break;
                         case 23: {
-                            return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);
+                            yychar = 0;
                         }
                         case -24:
                             break;
                         case 24: {
-                            yychar = 1;
+                            return Simbolo(yyline, yychar, yytext(), "conj", sym.conj);
                         }
                         case -25:
                             break;
                         case 25: {
-                            return Simbolo(yyline, yychar, yytext(), "conj", sym.conj);
+                            return Simbolo(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);
                         }
                         case -26:
                             break;
@@ -585,37 +593,37 @@ public class Scanner implements java_cup.runtime.Scanner {
                         }
                         case -40:
                             break;
-                        case 55: {
+                        case 59: {
                             return Simbolo(yyline, yychar, yytext(), "L", sym.L);
                         }
                         case -41:
                             break;
-                        case 56: {
+                        case 60: {
                             return Simbolo(yyline, yychar, yytext(), "id", sym.id);
                         }
                         case -42:
                             break;
-                        case 57: {
+                        case 61: {
                             return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);
                         }
                         case -43:
                             break;
-                        case 58: {
+                        case 62: {
                             return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);
                         }
                         case -44:
                             break;
-                        case 60: {
+                        case 64: {
                             return Simbolo(yyline, yychar, yytext(), "L", sym.L);
                         }
                         case -45:
                             break;
-                        case 61: {
+                        case 65: {
                             return Simbolo(yyline, yychar, yytext(), "L", sym.L);
                         }
                         case -46:
                             break;
-                        case 62: {
+                        case 66: {
                             return Simbolo(yyline, yychar, yytext(), "L", sym.L);
                         }
                         case -47:

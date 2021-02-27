@@ -4,10 +4,6 @@ import java.util.ArrayList;
 
 parser code
 {:
-  /*
-    ESTRUCTURAS PARA EXPRESIONES REGULARES (ÁRBOLES), 
-  */
-
     private ArrayList<ArrayList<String>> Conjuntos = new ArrayList<>();
     private ArrayList<ArrayList<String>> Expresiones = new ArrayList<>();
     private ArrayList<ArrayList<String>> Comparaciones = new ArrayList<>();
@@ -98,12 +94,14 @@ INI ::=
 S ::= 
   DEFINICION_CONJUNTO S
 | DEFINICION_EXPRESION_REGULAR S
+| error S
 | /*empty*/
 ;
 
 C ::=
   DEFINICION_CONJUNTO C
 | COMPARACION C
+| error C
 | /*empty*/
 ;
 

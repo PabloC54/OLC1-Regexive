@@ -86,20 +86,4 @@ public class TransitionTable {
             }
         }
     }
-
-    public void getTable() {
-        for (ArrayList state : states) {
-            String tran = "[";
-            for (Object tr : (ArrayList) state.get(2)) {
-                Transition t = (Transition) tr;
-                tran += t.toString() + ", ";
-            }
-            tran += "]";
-
-            tran = tran.replace(", ]", "]");
-
-            System.out.println(state.get(0) + " " + state.get(1) + " " + tran + " " + state.get(3));
-        }
-    }
-
 }
