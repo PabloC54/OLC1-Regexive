@@ -30,30 +30,29 @@ import Structs.Tree;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**
  *
  * @author pablo
  */
-public class Graph {
+public class Reporter {
 
     String main_path;
     File file;
     FileWriter writer;
 
-    public Graph(String main_path) {
+    public Reporter(String main_path) {
         this.main_path = main_path;
     }
 
-    public boolean graphTree(Tree tree, String folder, String id) throws IOException {
+    public boolean graphTree(Tree tree, String folder) throws IOException {
         try {
             String name = main_path + "\\ARBOLES_201901698\\" + folder;
             file = new File(name);
             file.mkdir();
 
-            name += "\\" + id;
+            name += "\\" + tree.id;
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
@@ -74,7 +73,7 @@ public class Graph {
 
 //        Files.deleteIfExists(file.toPath());
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }
@@ -101,16 +100,18 @@ public class Graph {
         return temp_str + printNodes(node.left, index + left_i) + printNodes(node.right, index + right_i);
     }
 
-    public boolean graphFollowTable(ArrayList<ArrayList> table, String folder, String id) throws IOException {
+    public boolean graphFollowTable(Tree tree, String folder) throws IOException {
         try {
             String name = main_path + "\\SIGUIENTES_201901698\\" + folder;
             file = new File(name);
             file.mkdir();
 
-            name += "\\" + id;
+            name += "\\" + tree.id;
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
+
+            ArrayList<ArrayList> table = tree.getTable();
 
             String s = " digraph G {\n"
                 + " node [label=\"\\N\", fontsize=13 shape=plaintext fontname = \"helvetica\"];\n"
@@ -131,18 +132,18 @@ public class Graph {
             String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
             Runtime.getRuntime().exec(command);
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }
 
-    public boolean graphTransitionTable(Tree tree, String folder, String id) throws IOException {
+    public boolean graphTransitionTable(Tree tree, String folder) throws IOException {
         try {
             String name = main_path + "\\TRANSICIONES_201901698\\" + folder;
             file = new File(name);
             file.mkdir();
 
-            name += "\\" + id;
+            name += "\\" + tree.id;
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
@@ -156,13 +157,11 @@ public class Graph {
                 + "  <tr><td><i>Estado</i></td><td><i>Transición</i></td><td><i>Final</i></td></tr>\n"; // cambiar
 
             for (ArrayList<ArrayList> state : tran.states) {
-                String temp = "[";
+                String temp = "";
                 for (Object tr : (ArrayList) state.get(2)) {
                     Transition t = (Transition) tr;
-                    temp += t.toString() + ", ";
+                    temp += t.toString() + "\n";
                 }
-                temp += "]";
-                temp = temp.replace(", ]", "]");
 
                 s += "<tr><td>" + state.get(0) + "  " + state.get(1) + "</td><td>" + temp + "</td><td>" + state.get(3) + "</td></tr>\n";
             }
@@ -177,40 +176,163 @@ public class Graph {
             Runtime.getRuntime().exec(command);
 
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }
 
-    public boolean graphAFND(String folder, String id) throws IOException {
+    public boolean graphAFND(Tree tree, String folder) throws IOException {
         try {
             String name = main_path + "\\AFND_201901698\\" + folder;
             file = new File(name);
             file.mkdir();
 
-            name += "\\" + id;
+            name += "\\" + tree.id;
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }
 
-    private boolean graphAFD(String folder, String id) throws IOException {
+    public boolean graphAFD(Tree tree, String folder) throws IOException {
         try {
             String name = main_path + "\\AFD_201901698\\" + folder;
             file = new File(name);
             file.mkdir();
 
-            name += "\\" + id;
+            name += "\\" + tree.id;
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
+
+            TransitionTable tran = new TransitionTable(tree.getRoot(), tree.getTable(), tree.getLeaves());
+
+            String s = " digraph G {\n"
+                + "    node [fontsize=13 fontname = \"helvetica\"];\n"
+                + "    nodesep=0.4;\n"
+                + "    ranksep=0.5;\n\n"
+                + "    rankdir=LR;\n\n";
+
+            for (ArrayList state : tran.states) {
+                String state_name = (String) state.get(0);
+                if (((boolean) state.get(3)) == true) {
+                    s += state_name + " [shape=doublecircle];\n";
+                }
+                for (Object tr : (ArrayList) state.get(2)) {
+                    Transition t = (Transition) tr;
+                    s += state_name + " -> " + t.finalState + " [label=\"" + t.transition + "\"];\n";
+                }
+            }
+            s += "} ";
+
+            writer.write(s);
+            writer.close();
+
+            String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
+            Runtime.getRuntime().exec(command);
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }
+
+    public boolean reportErrors(ArrayList<ArrayList<String>> lexical, ArrayList<ArrayList<String>> syntactic, String id) {
+        try {
+            if (lexical.isEmpty() && syntactic.isEmpty()) {
+                return false;
+            }
+
+            String name = main_path + "\\ERRORES_201901698\\" + id + ".dot";
+            file = new File(name + ".dot");
+            file.createNewFile();
+            writer = new FileWriter(file);
+
+            ArrayList<String> header = new ArrayList<>();
+            header.add("Tipo");
+            header.add("Línea");
+            header.add("Descripción");
+            header.add("Línea");
+            header.add("Columna");
+
+            file = new File(main_path + "\\data\\ERRORES_201901698\\" + id + ".html");
+            file.createNewFile();
+
+            String s = "<!DOCTYPE html>\n"
+                + "\t<html>\n"
+                + "\t\t<head>\n"
+                + "\t\t\t<title>Errores</title>\n"
+                + "\t\t\t<link rel='stylesheet' type='text/css' href='style.css'/>\n"
+                + "\t\t</head>\n"
+                + "\t\t<body>\n";
+            writer.write(s);
+
+            s = "\t\t\t<table class='container'>\n"
+                + "\t\t\t\t<thead>\n"
+                + "\t\t\t\t\t<tr>\n";
+            writer.write(s);
+
+            s = "";
+            for (String h : header) {
+                s += "\t\t\t\t\t\t<th><h1>" + h + "</h1></th>\n";
+            }
+            writer.write(s);
+
+            s = "\t\t\t\t\t</tr>\n"
+                + "\t\t\t\t</thead>\n\n"
+                + "\t\t\t\t<tbody>\n";
+            writer.write(s);
+
+            int index = 1;
+            if (!lexical.isEmpty()) {
+                for (int i = 0; i < lexical.size(); i++) {
+                    s = "\t\t\t\t\t<tr>\n"
+                        + "\t\t\t\t\t\t<td>" + index + "</td>\n"
+                        + "\t\t\t\t\t\t<td>Léxico</td>\n";
+
+                    s += "\t\t\t\t\t\t<td>El lexema '" + lexical.get(i).get(2) + "' no pertenece al lenguaje</td>\n"
+                        + "\t\t\t\t\t\t<td>" + lexical.get(i).get(0) + "</td>\n"
+                        + "\t\t\t\t\t\t<td>" + lexical.get(i).get(1) + "</td>\n";
+
+                    s += "\t\t\t\t\t</tr>\n\n";
+
+                    writer.write(s);
+                    index += 1;
+                }
+            }
+
+            if (!syntactic.isEmpty()) {
+                for (int i = 0; i < syntactic.size(); i++) {
+                    s = "\t\t\t\t\t<tr>\n"
+                        + "\t\t\t\t\t\t<td>" + index + "</td>\n"
+                        + "\t\t\t\t\t\t<td>Sintáctico</td>\n";
+
+                    s += "\t\t\t\t\t\t<td>No se esperaba '" + syntactic.get(i).get(2) + "'</td>\n"
+                        + "\t\t\t\t\t\t<td>" + syntactic.get(i).get(0) + "</td>\n"
+                        + "\t\t\t\t\t\t<td>" + syntactic.get(i).get(1) + "</td>\n";
+
+                    s += "\t\t\t\t\t</tr>\n\n";
+
+                    writer.write(s);
+                    index += 1;
+                }
+            }
+
+            s = "\t\t\t\t</tbody>\n"
+                + "\t\t\t</table>\n"
+                + "\t\t</body>\n"
+                + "\t</html>";
+
+            writer.write(s);
+            writer.close();
+
+            return true;
+
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 }

@@ -1,6 +1,6 @@
 {
     // CONJUNTOS
-    conj: Letra -> d~z;  	
+    conj: Letra -> a~z;  	
     CONJ: Digito -> 0~9;
     CONJ: Simbolo -> !~%;
 
@@ -13,7 +13,7 @@
 	%%
 
 	// COMPARACIONES
-    ExpReg1 : "primerLexemaCokoa";
-    ExpresionReg2 : "34.44";
+    identificador : "a8";
+    numero_telefonico : "33445566";
 
 }

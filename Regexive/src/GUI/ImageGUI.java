@@ -34,16 +34,16 @@ public class ImageGUI extends javax.swing.JFrame {
         }
 
         Icon image = new ImageIcon(img_temp);
-
-        if (image.getIconWidth() > getMaximumSize().width || image.getIconHeight() > getMaximumSize().height) {
+       
+        if (image.getIconWidth() > jPanel1.getMaximumSize().width || image.getIconHeight() > jPanel1.getMaximumSize().height) {
             int width = image.getIconWidth(), height = image.getIconHeight();
-            
-            if (width > getMaximumSize().width) {
-                width = getMaximumSize().width - 3;
+
+            if (width > jPanel1.getMaximumSize().width) {
+                width = jPanel1.getMaximumSize().width - 3;
                 height *= (Double.valueOf(width) / Double.valueOf(image.getIconWidth()));
             }
-            if (height > getMaximumSize().height) {
-                height = getMaximumSize().height - 3;
+            if (height > jPanel1.getMaximumSize().height) {
+                height = jPanel1.getMaximumSize().height - 3;
                 width *= (Double.valueOf(height) / Double.valueOf(image.getIconHeight()));
             }
 
@@ -65,10 +65,14 @@ public class ImageGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Imagen");
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        setMaximumSize(new java.awt.Dimension(1200, 700));
         setUndecorated(true);
         setResizable(false);
         setType(java.awt.Window.Type.POPUP);
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                formFocusLost(evt);
+            }
+        });
 
         image_label.setBackground(new java.awt.Color(9, 11, 16));
         image_label.setToolTipText("Clic para cerrar la imagen");
@@ -81,7 +85,7 @@ public class ImageGUI extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setMaximumSize(new java.awt.Dimension(800, 600));
+        jPanel1.setMaximumSize(new java.awt.Dimension(1150, 700));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -115,9 +119,12 @@ public class ImageGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void image_labelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_image_labelMouseClicked
-
         this.dispose();
     }//GEN-LAST:event_image_labelMouseClicked
+
+    private void formFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusLost
+        this.dispose();
+    }//GEN-LAST:event_formFocusLost
 
     /**
      * @param args the command line arguments

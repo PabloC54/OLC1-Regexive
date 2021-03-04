@@ -42,8 +42,7 @@ public class TransitionTable {
                 }
 
                 if (!exists) {
-                    Leave hojas = new Leave();
-                    if (hojas.isAccept(leave, leaves)) {
+                    if (isAccept(leave, leaves)) {
                         state.set(3, true);
                     }
                     if (lexemeNext.get(0) == "") {
@@ -63,8 +62,7 @@ public class TransitionTable {
                     states.add(nuevo);
 
                 } else {
-                    Leave hojas = new Leave();
-                    if (hojas.isAccept(leave, leaves)) {
+                    if (isAccept(leave, leaves)) {
                         state.set(3, true);
                     }
 
@@ -85,5 +83,14 @@ public class TransitionTable {
                 }
             }
         }
+    }
+
+    private boolean isAccept(int numLeave, ArrayList<Node> leaves) {
+        for (Node item : leaves) {
+            if (item.number == numLeave) {
+                return item.accept;
+            }
+        }
+        return false;
     }
 }

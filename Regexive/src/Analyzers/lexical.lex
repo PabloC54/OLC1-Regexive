@@ -13,48 +13,47 @@ import java.util.ArrayList;
 %type Symbol
 
 %{
+    private ArrayList<ArrayList<String>> Symbols = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errors = new ArrayList<>();
 
-    private ArrayList<ArrayList<String>> Simbolos = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
-
-    Symbol Simbolo(int linea, int columna, String lexema, String token, int s){
+    Symbol symbol(int line, int column, String lexeme, String token, int s){
         ArrayList<String> v = new ArrayList<>();
-        v.add(String.valueOf(linea));
-        v.add(String.valueOf(columna));
+        v.add(String.valueOf(line));
+        v.add(String.valueOf(column));
         v.add(token);
-        v.add(lexema);
+        v.add(lexeme);
 
-        Simbolos.add(v);
+        Symbols.add(v);
 
-        return new Symbol(s, linea, columna, yytext());
+        return new Symbol(s, line, column, yytext());
     }
 
-    void ErrorLexico(int linea, int columna, String lexema){    
+    void Error(int line, int column, String lexem){    
         ArrayList<String> v = new ArrayList<>();
-        v.add(String.valueOf(linea));
-        v.add(String.valueOf(columna));
-        v.add(lexema);
+        v.add(String.valueOf(line));
+        v.add(String.valueOf(column));
+        v.add(lexem);
 
-        Errores.add(v);
+        Errors.add(v);
     }
 
-    public ArrayList getSimbolos(){
-        return Simbolos;
+    public ArrayList getSymbols(){
+        return Symbols;
     }
 
-    public ArrayList getErrores(){
-        return Errores;
+    public ArrayList getErrors(){
+        return Errors;
     }
 %}
 
 %init{
     yyline = 1;
-    yychar = 0;
+    yychar = 1;
 %init}
 
 L=[a-zA-ZñÑ]
 D=[0-9]
-A=[\x20-\x2F\x3A-\x40\x5B-\x7D]
+A=[\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7D]
 blanco=[\040\t]
 L_set=({L}(,{L})+)|([a-zñ]~[a-zñ])|([A-ZÑ]~[A-ZÑ])
 D_set=({D}(,{D})+)|({D}~{D})
@@ -84,27 +83,27 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 \n                          {yychar=0;}
 {blanco}                    {}
 
-{llaveA}        {return Simbolo(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
-{llaveB}        {return Simbolo(yyline, yychar, yytext(), "llaveB", sym.llaveB);}
-{L_set}         {return Simbolo(yyline, yychar, yytext(), "L_set", sym.L_set);}
-{D_set}         {return Simbolo(yyline, yychar, yytext(), "D_set", sym.D_set);}
-{A_set}         {return Simbolo(yyline, yychar, yytext(), "A_set", sym.A_set);}
-{dospuntos}     {return Simbolo(yyline, yychar, yytext(), "dospuntos", sym.dospuntos);}
-{puntocoma}     {return Simbolo(yyline, yychar, yytext(), "puntocoma", sym.puntocoma);}
-{flecha}        {return Simbolo(yyline, yychar, yytext(), "flecha", sym.flecha);}
-{concat}        {return Simbolo(yyline, yychar, yytext(), "concat", sym.concat);}
-{disy}          {return Simbolo(yyline, yychar, yytext(), "disy", sym.disy);}
-{cerr_kleene}   {return Simbolo(yyline, yychar, yytext(), "cerr_kleene", sym.cerr_kleene);}
-{cerr_positiva} {return Simbolo(yyline, yychar, yytext(), "cerr_positiva", sym.cerr_positiva);}
-{cerr_bool}     {return Simbolo(yyline, yychar, yytext(), "cerr_bool", sym.cerr_bool);}
-{especial}      {return Simbolo(yyline, yychar, yytext(), "especial", sym.especial);}
-{porcentajes}   {return Simbolo(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);}
-{conj}          {return Simbolo(yyline, yychar, yytext(), "conj", sym.conj);}
-{L}             {return Simbolo(yyline, yychar, yytext(), "L", sym.L);}
-{id}            {return Simbolo(yyline, yychar, yytext(), "id", sym.id);}
-{string}        {return Simbolo(yyline, yychar, yytext(), "string", sym.string);}
+{llaveA}        {return symbol(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
+{L_set}         {return symbol(yyline, yychar, yytext(), "L_set", sym.L_set);}
+{llaveB}        {return symbol(yyline, yychar, yytext(), "llaveB", sym.llaveB);}
+{D_set}         {return symbol(yyline, yychar, yytext(), "D_set", sym.D_set);}
+{A_set}         {return symbol(yyline, yychar, yytext(), "A_set", sym.A_set);}
+{dospuntos}     {return symbol(yyline, yychar, yytext(), "dospuntos", sym.dospuntos);}
+{puntocoma}     {return symbol(yyline, yychar, yytext(), "puntocoma", sym.puntocoma);}
+{flecha}        {return symbol(yyline, yychar, yytext(), "flecha", sym.flecha);}
+{concat}        {return symbol(yyline, yychar, yytext(), "concat", sym.concat);}
+{disy}          {return symbol(yyline, yychar, yytext(), "disy", sym.disy);}
+{cerr_kleene}   {return symbol(yyline, yychar, yytext(), "cerr_kleene", sym.cerr_kleene);}
+{cerr_positiva} {return symbol(yyline, yychar, yytext(), "cerr_positiva", sym.cerr_positiva);}
+{cerr_bool}     {return symbol(yyline, yychar, yytext(), "cerr_bool", sym.cerr_bool);}
+{especial}      {return symbol(yyline, yychar, yytext(), "especial", sym.especial);}
+{porcentajes}   {return symbol(yyline, yychar, yytext(), "porcentajes", sym.porcentajes);}
+{conj}          {return symbol(yyline, yychar, yytext(), "conj", sym.conj);}
+{L}             {return symbol(yyline, yychar, yytext(), "L", sym.L);}
+{id}            {return symbol(yyline, yychar, yytext(), "id", sym.id);}
+{string}        {return symbol(yyline, yychar, yytext(), "string", sym.string);}
 
 
 . {
-  ErrorLexico(yyline, yychar, yytext());
+  Error(yyline, yychar, yytext());
 }

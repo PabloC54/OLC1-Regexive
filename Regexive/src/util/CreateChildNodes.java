@@ -13,8 +13,7 @@ public class CreateChildNodes {
     private DefaultMutableTreeNode root;
     private File fileRoot;
 
-    public CreateChildNodes(File fileRoot,
-        DefaultMutableTreeNode root) {
+    public CreateChildNodes(File fileRoot, DefaultMutableTreeNode root) {
         this.fileRoot = fileRoot;
         this.root = root;
         createChildren(fileRoot, root);

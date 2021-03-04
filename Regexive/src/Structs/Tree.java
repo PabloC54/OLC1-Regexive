@@ -1,12 +1,6 @@
-/*
-    Organizacion de Lenguajes y Compiladores 1 "A"
-    José Puac
-    Clase 4
-    Método del Árbol
- */
 package Structs;
 
-import Structs.type.Types;
+import Structs.NodeType.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -19,77 +13,77 @@ public class Tree {
 
     Node root;
 
-    ArrayList<Node> leaves = new ArrayList();
-    ArrayList<ArrayList> table = new ArrayList();
+    private ArrayList<Node> leaves = new ArrayList();
+    private ArrayList<ArrayList> table = new ArrayList();
+    private Stack pile = new Stack();
+    public String id;
 
-    public Tree(ArrayList<String> expresion) {
+    public Tree(ArrayList<String> expression) {
+        id = expression.remove(0);
+        expression.add(0, ".");
+        expression.add("#");
+        Collections.reverse(expression);
 
-        NumLeave numHoja = new NumLeave(expresion);
-        Stack pila = new Stack();
-        
-        expresion.add(0, ".");
-        expresion.add("#");
+        int num_leave = 1;
+        for (String str : expression) {
+            if (!str.equals(".") && !str.equals("|") && !str.equals("*") && !str.equals("+") && !str.equals("?")) {
+                num_leave += 1;
+            }
+        }
 
-        Collections.reverse(expresion);
+        for (String symbol : expression) {
+            Node left_node, right_node, node;
 
-        expresion.forEach((character) -> {
-            switch (character) {
+            switch (symbol) {
                 case "|":
-                    Node lefto = (Node) pila.pop();
-                    Node righto = (Node) pila.pop();
-
-                    Node no = new Node(character, Types.OR, 0, lefto, righto, leaves, table);
-                    pila.push(no);
-
+                    left_node = (Node) pile.pop();
+                    right_node = (Node) pile.pop();
+                    pile.push(new Node(symbol, Types.DISYUNCTION, 0, left_node, right_node, leaves, table));
                     break;
+
                 case ".":
-                    Node lefta = (Node) pila.pop();
-                    Node righta = (Node) pila.pop();
-
-                    Node na = new Node(character, Types.AND, 0, lefta, righta, leaves, table);
-                    pila.push(na);
-
+                    left_node = (Node) pile.pop();
+                    right_node = (Node) pile.pop();
+                    pile.push(new Node(symbol, Types.CONCATENATION, 0, left_node, right_node, leaves, table));
                     break;
+
                 case "*":
-                    Node onek = (Node) pila.pop();
-
-                    Node nk = new Node(character, Types.KLEENE, 0, onek, null, leaves, table);
-                    pila.push(nk);
-
+                    node = (Node) pile.pop();
+                    pile.push(new Node(symbol, Types.KLEENE_LOCK, 0, node, null, leaves, table));
                     break;
+
                 case "+":
-                    Node onep = (Node) pila.pop();
-
-                    Node np = new Node(character, Types.POSITIVA, 0, onep, null, leaves, table);
-                    pila.push(np);
-
+                    node = (Node) pile.pop();
+                    pile.push(new Node(symbol, Types.POSITIVE_LOCK, 0, node, null, leaves, table));
                     break;
+
                 case "?":
-                    Node oneb = (Node) pila.pop();
-
-                    Node nb = new Node(character, Types.BOOL, 0, oneb, null, leaves, table);
-                    pila.push(nb);
-
+                    node = (Node) pile.pop();
+                    pile.push(new Node(symbol, Types.BOOLEAN_LOCK, 0, node, null, leaves, table));
                     break;
+
                 default:
-                    Node nd = new Node(character, Types.HOJA, numHoja.getNum(), null, null, leaves, table);
-                    pila.push(nd);
-                    Leave hoja = new Leave();
-                    hoja.addLeave(nd, leaves);
+                    num_leave -= 1;
+                    node = new Node(symbol, Types.LEAVE, num_leave, null, null, leaves, table);
+                    pile.push(node);
+                    leaves.add(node);
                     break;
             }
-        });
-        this.root = (Node) pila.pop();
+        }
+
+        root = (Node) pile.pop();
+        root.getNode();
+        root.follow();
     }
 
     public Node getRoot() {
         return root;
     }
-    
+
     public ArrayList<Node> getLeaves() {
         return leaves;
     }
-    
+
     public ArrayList<ArrayList> getTable() {
         return table;
     }

@@ -4,51 +4,47 @@ import java.util.ArrayList;
 
 parser code
 {:
-    private ArrayList<ArrayList<String>> Conjuntos = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Expresiones = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Comparaciones = new ArrayList<>();
-    private ArrayList<ArrayList<String>> Errores = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Sets = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Expressions = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Comparations = new ArrayList<>();
+    private ArrayList<ArrayList<String>> Errors = new ArrayList<>();
         
-    private ArrayList<String> expresion = new ArrayList<>();
+    private ArrayList<String> expression = new ArrayList<>();
 
-    public ArrayList getConjuntos(){
-        return Conjuntos;
+    public ArrayList getSets(){
+        return Sets;
+    }
+
+    public ArrayList getExpressions(){
+        return Expressions;
     }  
 
-    public ArrayList getExpresiones(){
-        return Expresiones;
+    public ArrayList getComparations(){
+        return Comparations;
     }  
 
-    public ArrayList getComparaciones(){
-        return Comparaciones;
-    }  
-
-    public ArrayList getErrores(){
-        return Errores;
+    public ArrayList getErrors(){
+        return Errors;
     }   
 
-    private void Conjunto(String id, String definicion){
+    private void Set(String id, String definition){
         ArrayList<String> v = new ArrayList<>();
         v.add(id);
-        v.add(definicion);
-        Conjuntos.add(v);  
+        v.add(definition);
+        Sets.add(v);  
     }
 
-    private void Expresion(String id){
-        expresion.add(0, id);
-        Expresiones.add(expresion);
-        expresion = new ArrayList<>();
+    private void Expression(String id){
+        expression.add(0, id);
+        Expressions.add(expression);
+        expression=new ArrayList<>();
     }
 
-    private void Termino(String a){
-        expresion.add(a);
-    }
-
-    private void Comparacion(String expresion, String string){
+    private void Comparation(String expression, String string){
         ArrayList<String> v = new ArrayList<>();
-        v.add(expresion);
+        v.add(expression);
         v.add(string);
-        Comparaciones.add(v);
+        Comparations.add(v);
     }
 
     public void syntax_error(Symbol s){ 
@@ -56,7 +52,7 @@ parser code
         v.add(String.valueOf(s.left));
         v.add(String.valueOf(s.right));
         v.add(String.valueOf(s.value));
-        Errores.add(v);
+        Errors.add(v);
     } 
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
@@ -106,7 +102,7 @@ C ::=
 ;
 
 DEFINICION_CONJUNTO ::=
-  conj dospuntos id:a flecha CONJUNTO:b puntocoma  {:Conjunto(a, (String) b);:}
+  conj dospuntos id:a flecha CONJUNTO:b puntocoma  {:Set(a, (String) b);:}
 ;
 
 CONJUNTO ::=
@@ -116,26 +112,24 @@ CONJUNTO ::=
 ;
 
 DEFINICION_EXPRESION_REGULAR ::= 
-  id:a flecha EXPRESION_REGULAR puntocoma          {:Expresion(a);:}
+  id:a flecha EXPRESION_REGULAR puntocoma          {:Expression(a);:}
 ;
 
 EXPRESION_REGULAR ::=
-  concat:a EXPRESION_REGULAR EXPRESION_REGULAR       {:expresion.add(0, a);:}
-| disy:a EXPRESION_REGULAR EXPRESION_REGULAR         {:expresion.add(0, a);:}
-| cerr_kleene:a EXPRESION_REGULAR                    {:expresion.add(0, a);:}
-| cerr_positiva:a EXPRESION_REGULAR                  {:expresion.add(0, a);:}
-| cerr_bool:a EXPRESION_REGULAR                      {:expresion.add(0, a);:}
+  concat:a EXPRESION_REGULAR EXPRESION_REGULAR       {:expression.add(0, a);:}
+| disy:a EXPRESION_REGULAR EXPRESION_REGULAR         {:expression.add(0, a);:}
+| cerr_kleene:a EXPRESION_REGULAR                    {:expression.add(0, a);:}
+| cerr_positiva:a EXPRESION_REGULAR                  {:expression.add(0, a);:}
+| cerr_bool:a EXPRESION_REGULAR                      {:expression.add(0, a);:}
 | TERMINO                                     
 ;
 
 TERMINO ::=
-  L:a                                              {:expresion.add(0, a);:}
-| string:a                                         {:expresion.add(0, a);:}
-| llaveA id:a llaveB                               {:expresion.add(0, a);:}
-| especial:a                                       {:expresion.add(0, a);:}
+  L:a                                              {:expression.add(0, a);:}
+| string:a                                         {:expression.add(0, a);:}
+| llaveA id:a llaveB                               {:expression.add(0, a);:}
+| especial:a                                       {:expression.add(0, a);:}
 ;
 
-COMPARACION ::= id:a dospuntos string:b puntocoma  {:Comparacion(a, (String) b);:}
+COMPARACION ::= id:a dospuntos string:b puntocoma  {:Comparation(a, (String) b);:}
 ;
-
-

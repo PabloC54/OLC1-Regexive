@@ -349,7 +349,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Microsoft JhengHei" size="12" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value=" (0, 0) "/>
+            <Property name="text" type="java.lang.String" value=" L&#xed;n. 0, Col. 0 "/>
             <Property name="opaque" type="boolean" value="true"/>
           </Properties>
         </Component>

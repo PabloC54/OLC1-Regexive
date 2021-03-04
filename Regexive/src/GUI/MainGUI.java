@@ -5,13 +5,11 @@
  */
 package GUI;
 
-import Graphing.Graph;
+import Analyzers.ExpressionAnalyzer;
+import Graphing.Reporter;
 import static Main.Main.main_path;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
-import Structs.Node;
 import Structs.Tree;
-import Structs.FollowTable;
-import Structs.TransitionTable;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -31,6 +29,8 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
@@ -62,16 +62,21 @@ import util.FileNode;
  */
 public class MainGUI extends javax.swing.JFrame {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    public Graph graph = new Graph(main_path + "\\data");
+    private Map<String, ArrayList<ArrayList<String>>> Data = new HashMap<>();
+    private ArrayList<Tree> Trees = new ArrayList<>();
 
-    public String file_name = "";
-    public Boolean saved = false;
-    public File file = new File("");
+    private Analyzers.Parser parser;
+    private Analyzers.Scanner scanner;
+    private ExpressionAnalyzer Analyzer = new ExpressionAnalyzer();
+
+    private Reporter Reporter = new Reporter(main_path + "\\data");
+
+    private String file_name = "";
+    private Boolean saved = false;
+    private File file = new File("");
+
     final UndoManager undo = new UndoManager();
 
     public MainGUI() {
@@ -96,27 +101,27 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
-        input_text.getActionMap().put("Undo",
-            new AbstractAction("Undo") {
+        input_text.getActionMap().put("Undo", new AbstractAction("Undo") {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undo.canUndo()) {
                         undo.undo();
                     }
                 } catch (CannotUndoException e) {
+                    Output("No se puede deshacer");
                 }
             }
         });
         input_text.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
 
-        input_text.getActionMap().put("Redo",
-            new AbstractAction("Redo") {
+        input_text.getActionMap().put("Redo", new AbstractAction("Redo") {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     if (undo.canRedo()) {
                         undo.redo();
                     }
                 } catch (CannotRedoException e) {
+                    Output("No se puede rehacer");
                 }
             }
         });
@@ -253,7 +258,7 @@ public class MainGUI extends javax.swing.JFrame {
 
         position_label.setBackground(new java.awt.Color(10, 10, 10));
         position_label.setFont(new java.awt.Font("Microsoft JhengHei", 1, 12)); // NOI18N
-        position_label.setText(" (0, 0) ");
+        position_label.setText(" Lín. 0, Col. 0 ");
         position_label.setOpaque(true);
 
         update_button.setText("Actualizar");
@@ -410,91 +415,120 @@ public class MainGUI extends javax.swing.JFrame {
             }
         }
 
-        Analyzers.Parser parser;
-        Analyzers.Scanner scanner;
-
+        Data.clear();
+        Trees.clear();
         try {
             scanner = new Analyzers.Scanner(new StringReader(input_text.getText()));
             parser = new Analyzers.Parser(scanner);
             parser.parse();
 
-            Output_title("ANÁLISIS LÉXICO");
+            ArrayList<ArrayList<String>> symbols = scanner.getSymbols();
+            ArrayList<ArrayList<String>> lexical_errors = scanner.getErrors();
 
-            ArrayList<ArrayList<String>> Simbolos = scanner.getSimbolos();
-            ArrayList<ArrayList<String>> Errores_lexicos = scanner.getErrores();
+            ArrayList<ArrayList<String>> sets = parser.getSets();
+            ArrayList<ArrayList<String>> expressions = parser.getExpressions();
+            ArrayList<ArrayList<String>> comparations = parser.getComparations();
+            ArrayList<ArrayList<String>> syntactic_errors = parser.getErrors();
 
-            for (ArrayList<String> v : Simbolos) {
-                Output("(" + v.get(0) + ", " + v.get(1) + ") " + v.get(2) + " :  " + v.get(3));
+            if (Reporter.reportErrors(lexical_errors, syntactic_errors, file_name)) {
+                Output_error("Se generó un reporte de errores en data\\ERRORES_201901698\\" + file_name + ".png");
+                return;
             }
 
-            Output_title("ANÁLISIS SINTÁCTICO");
+            for (ArrayList<String> expression : expressions) {
+                Tree tree = new Tree(expression);
+                Output_highlight(expression.get(0));
 
-            ArrayList<ArrayList<String>> Conjuntos = parser.getConjuntos();
-            ArrayList<ArrayList<String>> Expresiones = parser.getExpresiones();
-            ArrayList<ArrayList<String>> Comparaciones = parser.getComparaciones();
-            ArrayList<ArrayList<String>> Errores_sintacticos = parser.getErrores();
-
-            Output_highlight("Conjuntos");
-
-            for (ArrayList<String> v : Conjuntos) {
-                Output(v.get(0) + " :  " + v.get(1));
-            }
-            Output_highlight("Expresiones");
-
-            for (ArrayList<String> v : Expresiones) {
-                String temp = "";
-
-                for (String s : v) {
-                    temp += s + " ";
-                }
-
-                Output(temp);
-            }
-
-            Output_highlight("Comparaciones");
-
-            for (ArrayList<String> v : Comparaciones) {
-                Output(v.get(0) + " :  " + v.get(1));
-            }
-
-            for (ArrayList<String> expresion : Expresiones) {
-                String id = expresion.remove(0);
-                Tree tree = new Tree(expresion); // CREA EL ARBOL
-                Node root = tree.getRoot();
-
-                root.getNode();
-                root.follow();
-
-                if (graph.graphTree(tree, file_name, id)) {
-                    Output("Se generó el árbol en " + main_path + "\\ARBOLES_201901698\\" + file_name + "\\" + id + ".png");
+                if (Reporter.graphTree(tree, file_name)) {
+                    Output("Se generó el árbol en data\\ARBOLES_201901698\\" + file_name + "\\" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar el árbol");
                 }
-                if (graph.graphFollowTable(tree.getTable(), file_name, id)) {
-                    Output("Se generó la tabla de siguientes en " + main_path + "\\SIGUIENTES_201901698\\" + file_name + "\\" + id + ".png");
+                if (Reporter.graphFollowTable(tree, file_name)) {
+                    Output("Se generó la tabla de siguientes en data\\SIGUIENTES_201901698\\" + file_name + "\\" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar la tabla de siguientes");
                 }
-                if (graph.graphTransitionTable(tree, file_name, id)) {
-                    Output("Se generó la tabla de transiciones en " + main_path + "\\TRANSICIONES_201901698\\" + file_name + "\\" + id + ".png");
+                if (Reporter.graphTransitionTable(tree, file_name)) {
+                    Output("Se generó la tabla de transiciones en data\\TRANSICIONES_201901698\\" + file_name + "\\" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar la tabla de transiciones");
                 }
+                if (Reporter.graphAFD(tree, file_name)) {
+                    Output("Se generó el AFD en data\\AFD_201901698\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar el AFD");
+                }
+                Trees.add(tree);
             }
-            if (Report(Errores_lexicos, Errores_sintacticos)) {
-                Output("Se generó un reporte de errores en " + main_path + "\\ERRORES_201901698\\" + file_name + ".png");
-            }
+
+            Data.put("symbols", symbols);
+            Data.put("sets", sets);
+            Data.put("comparations", comparations);
 
         } catch (Exception e) {
             Output_error("Error fatal");
-            System.out.println("ERROR");
             System.out.println(e.getCause());
         }
 
-//        updateTree();
+        updateTree();
     }//GEN-LAST:event_analize_buttonActionPerformed
 
     private void generate_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_buttonActionPerformed
+        try {
+            if (Data.isEmpty()) {
+                Output_error("No hay información");
+                return;
+            }
+
+            String name = main_path + "\\data\\SALIDAS_201901698\\" + file_name;
+            file = new File(name + ".json");
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+
+            String s = "{\n";
+
+            for (ArrayList comparation : Data.get("comparations")) {
+
+                s += "\t{\n";
+                String lexema = (String) comparation.get(1);
+                s += "\t\t\"Valor\":\'" + lexema + "\',\n";
+
+                String id = (String) comparation.get(0);
+                s += "\t\t\"ExpresionRegular\":\"" + id + "\",\n";
+
+                Tree tree = null;
+
+                for (Tree t : Trees) {
+                    if (t.id.equals(id)) {
+                        tree = t;
+                    }
+                }
+
+                if (tree == null) {
+                    Output_error("No hay arbol para '" + lexema + "'");
+                    continue;
+                }
+
+                Analyzer.setData(Data.get("symbols"), Data.get("sets"), tree);
+
+                if (Analyzer.Analyze(lexema)) {
+                    s += "\t\t\"Resultado\":\"Cadena Válida\",\n";
+                } else {
+                    s += "\t\t\"Resultado\":\"Cadena No Válida\",\n";
+                }
+                s += "\t},\n";
+            }
+
+            s += "\n}";
+
+            writer.write(s);
+            writer.close();
+
+        } catch (IOException e) {
+            Output_error("Error fatal");
+            System.out.println(e.getCause());
+        }
 
     }//GEN-LAST:event_generate_buttonActionPerformed
 
@@ -530,7 +564,15 @@ public class MainGUI extends javax.swing.JFrame {
                         Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if (file_temp.getName().toLowerCase().endsWith(".json")) {
-                    // JSON                    
+                    FileInputStream inputStream;
+                    try {
+                        inputStream = new FileInputStream(file);
+                        Output(readFromInputStream(inputStream));
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             } else if (evt.getButton() == MouseEvent.BUTTON3) { // eliminar archivo
                 try {
@@ -578,7 +620,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
         line += 1;
 
-        position_label.setText(" (" + line + ", " + column + ") ");
+        position_label.setText(" Lín. " + line + ", Col." + column + " ");
     }//GEN-LAST:event_input_textMouseClicked
 
     private void input_textKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_input_textKeyReleased
@@ -596,14 +638,14 @@ public class MainGUI extends javax.swing.JFrame {
         }
         line += 1;
 
-        position_label.setText(" (" + line + ", " + column + ") ");
+        position_label.setText(" Lín. " + line + ", Col." + column + " ");
     }//GEN-LAST:event_input_textKeyReleased
 
     private void update_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_buttonActionPerformed
         updateTree();
     }//GEN-LAST:event_update_buttonActionPerformed
 
-    public static void deleteFolder(File folder) {
+    private static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File f : files) {
@@ -616,7 +658,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
         folder.delete();
     }
-    // ================================>>ACTIONS<<=========================================
+    // ====================================================>>ACTIONS<<============================================================
 
     private void new_dialogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_new_dialogActionPerformed
 
@@ -916,7 +958,6 @@ public class MainGUI extends javax.swing.JFrame {
                 writer.close();
 
             } catch (IOException e) {
-                e.printStackTrace();
                 return false;
             }
 
@@ -942,108 +983,6 @@ public class MainGUI extends javax.swing.JFrame {
             }
         }
         return resultStringBuilder.toString();
-    }
-
-    private boolean Report(ArrayList<ArrayList<String>> lexicos, ArrayList<ArrayList<String>> sintacticos) {
-        File file_temp;
-        BufferedWriter writer = null;
-        String temp;
-
-        try {
-            if (lexicos.isEmpty() && sintacticos.isEmpty()) {
-                return false;
-            }
-
-            ArrayList<String> header = new ArrayList<>();
-            header.add("Tipo");
-            header.add("Línea");
-            header.add("Descripción");
-            header.add("Línea");
-            header.add("Columna");
-
-            file_temp = new File(main_path + "\\data\\ERRORES_201901698\\" + file_name + ".html");
-            file_temp.createNewFile();
-            writer = new BufferedWriter(new FileWriter(file_temp, false));
-
-            temp = "<!DOCTYPE html>\n"
-                + "\t<html>\n"
-                + "\t\t<head>\n"
-                + "\t\t\t<title>Errores</title>\n"
-                + "\t\t\t<link rel='stylesheet' type='text/css' href='style.css'/>\n"
-                + "\t\t</head>\n"
-                + "\t\t<body>\n";
-            writer.write(temp);
-
-            temp = "\t\t\t<table class='container'>\n"
-                + "\t\t\t\t<thead>\n"
-                + "\t\t\t\t\t<tr>\n";
-            writer.write(temp);
-
-            temp = "";
-            for (String h : header) {
-                temp += "\t\t\t\t\t\t<th><h1>" + h + "</h1></th>\n";
-            }
-            writer.write(temp);
-
-            temp = "\t\t\t\t\t</tr>\n"
-                + "\t\t\t\t</thead>\n\n"
-                + "\t\t\t\t<tbody>\n";
-            writer.write(temp);
-
-            int index = 1;
-            if (!lexicos.isEmpty()) {
-                for (int i = 0; i < lexicos.size(); i++) {
-                    temp = "\t\t\t\t\t<tr>\n"
-                        + "\t\t\t\t\t\t<td>" + index + "</td>\n"
-                        + "\t\t\t\t\t\t<td>Léxico</td>\n";
-
-                    temp += "\t\t\t\t\t\t<td>El lexema '" + lexicos.get(i).get(2) + "' no pertenece al lenguaje</td>\n"
-                        + "\t\t\t\t\t\t<td>" + lexicos.get(i).get(0) + "</td>\n"
-                        + "\t\t\t\t\t\t<td>" + lexicos.get(i).get(1) + "</td>\n";
-
-                    temp += "\t\t\t\t\t</tr>\n\n";
-
-                    writer.write(temp);
-                    index += 1;
-                }
-            }
-
-            if (!sintacticos.isEmpty()) {
-                for (int i = 0; i < sintacticos.size(); i++) {
-                    temp = "\t\t\t\t\t<tr>\n"
-                        + "\t\t\t\t\t\t<td>" + index + "</td>\n"
-                        + "\t\t\t\t\t\t<td>Sintáctico</td>\n";
-
-                    temp += "\t\t\t\t\t\t<td>No se esperaba '" + sintacticos.get(i).get(2) + "'</td>\n"
-                        + "\t\t\t\t\t\t<td>" + sintacticos.get(i).get(0) + "</td>\n"
-                        + "\t\t\t\t\t\t<td>" + sintacticos.get(i).get(1) + "</td>\n";
-
-                    temp += "\t\t\t\t\t</tr>\n\n";
-
-                    writer.write(temp);
-                    index += 1;
-                }
-            }
-
-            temp = "\t\t\t\t</tbody>\n"
-                + "\t\t\t</table>\n"
-                + "\t\t</body>\n"
-                + "\t</html>";
-
-            writer.write(temp);
-            writer.close();
-
-            return true;
-
-        } catch (Exception e) {
-            try {
-                writer.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MainGUI.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            }
-            return false;
-        }
     }
 
     // =================================>>MAIN<<===========================================

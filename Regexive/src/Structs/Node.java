@@ -1,21 +1,20 @@
-
 package Structs;
 
 import java.util.ArrayList;
-import Structs.type.Types;
+import Structs.NodeType.Types;
 
 /**
  *
  * @author josef
  */
 public class Node {
-    
+
     public ArrayList<Integer> first;
     public ArrayList<Integer> last;
     public boolean anullable;
 
     public String lexeme;
-    Types type;
+    public Types type;
     int number;
 
     boolean accept;
@@ -23,8 +22,8 @@ public class Node {
     public Node left;
     public Node right;
 
-    ArrayList<Node> leaves;
-    ArrayList<ArrayList> table;
+    private ArrayList<Node> leaves;
+    private ArrayList<ArrayList> table;
 
     public Node(String lexeme, Types type, int number, Node left, Node right, ArrayList<Node> leaves, ArrayList<ArrayList> table) {
         first = new ArrayList();
@@ -35,7 +34,7 @@ public class Node {
         this.type = type;
         this.number = number;
 
-        accept = "#".equals(this.lexeme);
+        accept = this.lexeme.equals("#");
 
         this.left = left;
         this.right = right;
@@ -50,27 +49,28 @@ public class Node {
 
         if (null != type) {
             switch (type) {
-                case HOJA:
+                case LEAVE:
                     anullable = false;
                     first.add(number);
                     last.add(number);
                     break;
-                case AND:
+
+                case CONCATENATION:
                     if (leftNode instanceof Node && rightNode instanceof Node) {
                         anullable = leftNode.anullable && rightNode.anullable;
-
                         first.addAll(leftNode.first);
-                        if (leftNode.anullable) {
-                            first.addAll(( rightNode).first);
-                        }
 
+                        if (leftNode.anullable) {
+                            first.addAll((rightNode).first);
+                        }
                         if (rightNode.anullable) {
                             last.addAll(leftNode.last);
                         }
                         last.addAll(rightNode.last);
                     }
                     break;
-                case OR:
+
+                case DISYUNCTION:
                     if (leftNode instanceof Node && rightNode instanceof Node) {
                         anullable = leftNode.anullable || rightNode.anullable;
 
@@ -81,27 +81,31 @@ public class Node {
                         last.addAll(rightNode.last);
                     }
                     break;
-                case KLEENE:
+
+                case KLEENE_LOCK:
                     if (leftNode instanceof Node) {
                         anullable = true;
                         first.addAll(leftNode.first);
                         last.addAll(leftNode.last);
                     }
                     break;
-                case POSITIVA:
+
+                case POSITIVE_LOCK:
                     if (leftNode instanceof Node) {
                         anullable = false;
                         first.addAll(leftNode.first);
                         last.addAll(leftNode.last);
                     }
                     break;
-                case BOOL:
+
+                case BOOLEAN_LOCK:
                     if (leftNode instanceof Node) {
                         anullable = true;
                         first.addAll(leftNode.first);
                         last.addAll(leftNode.last);
                     }
                     break;
+
                 default:
                     break;
             }
@@ -115,38 +119,38 @@ public class Node {
 
         if (null != type) {
             switch (type) {
-                case AND:
+                case CONCATENATION:
                     for (int item : leftFollow.last) {
-                        Leave hoja = new Leave();
-                        Node nodo = hoja.getLeave(item, leaves);
+                        Node node = getLeave(item, leaves);
                         FollowTable tabla = new FollowTable();
-                        tabla.append(nodo.number, nodo.lexeme, rightFollow.first, table);
+                        tabla.append(node.number, node.lexeme, rightFollow.first, table);
                     }
                     break;
-                case KLEENE:
+
+                case KLEENE_LOCK:
                     for (int item : leftFollow.last) {
-                        Leave hoja = new Leave();
-                        Node nodo = hoja.getLeave(item, leaves);
+                        Node node = getLeave(item, leaves);
                         FollowTable tabla = new FollowTable();
-                        tabla.append(nodo.number, nodo.lexeme, leftFollow.first, table);
+                        tabla.append(node.number, node.lexeme, leftFollow.first, table);
                     }
                     break;
-                case POSITIVA:
+
+                case POSITIVE_LOCK:
                     for (int item : leftFollow.last) {
-                        Leave hoja = new Leave();
-                        Node nodo = hoja.getLeave(item, leaves);
+                        Node node = getLeave(item, leaves);
                         FollowTable tabla = new FollowTable();
-                        tabla.append(nodo.number, nodo.lexeme, leftFollow.first, table);
+                        tabla.append(node.number, node.lexeme, leftFollow.first, table);
                     }
                     break;
-                case BOOL:
+
+                case BOOLEAN_LOCK:
                     for (int item : leftFollow.last) {
-                        Leave hoja = new Leave();
-                        Node nodo = hoja.getLeave(item, leaves);
+                        Node node = getLeave(item, leaves);
                         FollowTable tabla = new FollowTable();
-                        tabla.append(nodo.number, nodo.lexeme, leftFollow.first, table);
+                        tabla.append(node.number, node.lexeme, leftFollow.first, table);
                     }
                     break;
+
                 default:
                     break;
             }
@@ -155,4 +159,12 @@ public class Node {
         return this;
     }
 
+    private Node getLeave(int numLeave, ArrayList<Node> leaves) {
+        for (Node item : leaves) {
+            if (item.number == numLeave) {
+                return item;
+            }
+        }
+        return null;
+    }
 }

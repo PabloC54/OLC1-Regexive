@@ -2,27 +2,24 @@
     nodesep=0.4;
     ranksep=0.5;
 
-node_ [fontsize=13 shape=box fontname = "helvetica" label="[3, 6] . [6]
+node_ [fontsize=13 shape=box fontname = "helvetica" label="[1, 2] . [4]
 false"];
 node_ -> node_l;
 node_ -> node_r;
-node_l [fontsize=13 shape=box fontname = "helvetica" label="[3] ? [5]
-true"];
+node_l [fontsize=13 shape=box fontname = "helvetica" label="[1, 2] . [3]
+false"];
 node_l -> node_ll;
-node_ll [fontsize=13 shape=box fontname = "helvetica" label="[3, 6] . [5]
+node_l -> node_lr;
+node_ll [fontsize=13 shape=box fontname = "helvetica" label="[1, 2] | [1, 2]
 false"];
 node_ll -> node_lll;
 node_ll -> node_llr;
-node_lll [fontsize=13 shape=box fontname = "helvetica" label="[3] Simbolo [3]
+node_lll [fontsize=13 shape=box fontname = "helvetica" label="[1] Digito [1]
 false"];
-node_llr [fontsize=13 shape=box fontname = "helvetica" label="[4] . [5]
+node_llr [fontsize=13 shape=box fontname = "helvetica" label="[2] Letra [2]
 false"];
-node_llr -> node_llrl;
-node_llr -> node_llrr;
-node_llrl [fontsize=13 shape=box fontname = "helvetica" label="[4] Digito [4]
+node_lr [fontsize=13 shape=box fontname = "helvetica" label="[3] Letra [3]
 false"];
-node_llrr [fontsize=13 shape=box fontname = "helvetica" label="[5] Letra [5]
-false"];
-node_r [fontsize=13 shape=box fontname = "helvetica" label="[6] # [6]
+node_r [fontsize=13 shape=box fontname = "helvetica" label="[4] # [4]
 false"];
 } 
