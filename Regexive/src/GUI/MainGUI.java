@@ -5,11 +5,11 @@
  */
 package GUI;
 
-import Analyzers.ExpressionAnalyzer;
 import Graphing.Reporter;
 import static Main.Main.main_path;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
+import Structs.AFD;
 import Structs.Tree;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -64,12 +64,11 @@ public class MainGUI extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, ArrayList<ArrayList<String>>> Data = new HashMap<>();
-    private ArrayList<Tree> Trees = new ArrayList<>();
+    public static Map<String, ArrayList<ArrayList<String>>> Data = new HashMap<>();
+    public Map<String, AFD> AFDs = new HashMap<>();
 
     private Analyzers.Parser parser;
     private Analyzers.Scanner scanner;
-    private ExpressionAnalyzer Analyzer = new ExpressionAnalyzer();
 
     private Reporter Reporter = new Reporter(main_path + "\\data");
 
@@ -86,13 +85,6 @@ public class MainGUI extends javax.swing.JFrame {
         this.setIconImage(new ImageIcon(getClass().getResource("/icon/appicon.png")).getImage());
 
         unsaved_label.setVisible(false);
-        input_text.setTabSize(4);
-
-        UNDO();
-        updateTree();
-    }
-
-    public void UNDO() {
 
         Document document = input_text.getDocument();
         document.addUndoableEditListener(new UndoableEditListener() {
@@ -127,9 +119,32 @@ public class MainGUI extends javax.swing.JFrame {
         });
         input_text.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
         input_text.getInputMap().put(KeyStroke.getKeyStroke("control shift Z"), "Redo");
+
+        updateTree();
+    }
+
+    private void initDirectories() {
+        file = new File(main_path + "\\data");
+        file.mkdir();
+        file = new File(main_path + "\\data\\AFD");
+        file.mkdir();
+        file = new File(main_path + "\\data\\AFND");
+        file.mkdir();
+        file = new File(main_path + "\\data\\Arboles");
+        file.mkdir();
+        file = new File(main_path + "\\data\\Errores");
+        file.mkdir();
+        file = new File(main_path + "\\data\\Salidas");
+        file.mkdir();
+        file = new File(main_path + "\\data\\Siguientes");
+        file.mkdir();
+        file = new File(main_path + "\\data\\Transiciones");
+        file.mkdir();
     }
 
     private void updateTree() {
+        initDirectories();
+
         File fileRoot = new File(main_path + "\\data");
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new FileNode(fileRoot));
 
@@ -137,7 +152,7 @@ public class MainGUI extends javax.swing.JFrame {
 
         DefaultTreeModel model = new DefaultTreeModel(root);
         data_tree.setModel(model);
-        expandNodes(0, data_tree.getRowCount());
+//        expandNodes(0, data_tree.getRowCount());
     }
 
     private void expandNodes(int startingIndex, int rowCount) {
@@ -161,8 +176,8 @@ public class MainGUI extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         output_text = new javax.swing.JTextPane();
         jLabel2 = new javax.swing.JLabel();
-        generate_button = new javax.swing.JToggleButton();
         analize_button = new javax.swing.JToggleButton();
+        generate_button = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         data_tree = new javax.swing.JTree();
         unsaved_label = new javax.swing.JLabel();
@@ -175,16 +190,16 @@ public class MainGUI extends javax.swing.JFrame {
         open_dialog = new javax.swing.JMenuItem();
         save_dialog = new javax.swing.JMenuItem();
         saveas_dialog = new javax.swing.JMenuItem();
-        generate_dialog = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
 
         input_text.setColumns(20);
         input_text.setFont(new java.awt.Font("Fira Code", 0, 12)); // NOI18N
         input_text.setRows(5);
+        input_text.setTabSize(4);
         input_text.setText("No hay archivo de entrada\nCarga un archivo OLC o crea uno nuevo en la pestaña 'Archivo'");
         input_text.setEnabled(false);
+        input_text.setMinimumSize(new java.awt.Dimension(200, 36));
         input_text.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 input_textMouseClicked(evt);
@@ -207,7 +222,7 @@ public class MainGUI extends javax.swing.JFrame {
         file_name_label.setText("ninguno");
 
         output_text.setEditable(false);
-        output_text.setBackground(new java.awt.Color(6, 8, 13));
+        output_text.setBackground(new java.awt.Color(1, 14, 26));
         output_text.setFont(new java.awt.Font("Fira Code Medium", 0, 12)); // NOI18N
         output_text.setForeground(new java.awt.Color(204, 204, 204));
         output_text.setName("output_text"); // NOI18N
@@ -216,21 +231,21 @@ public class MainGUI extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
         jLabel2.setText("Salida:");
 
-        generate_button.setText("Generar Autómata");
-        generate_button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        generate_button.setEnabled(false);
-        generate_button.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generate_buttonActionPerformed(evt);
-            }
-        });
-
         analize_button.setText("Analizar Entrada");
         analize_button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         analize_button.setEnabled(false);
         analize_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 analize_buttonActionPerformed(evt);
+            }
+        });
+
+        generate_button.setText("Generar Autómata");
+        generate_button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        generate_button.setEnabled(false);
+        generate_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generate_buttonActionPerformed(evt);
             }
         });
 
@@ -256,9 +271,10 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
-        position_label.setBackground(new java.awt.Color(10, 10, 10));
-        position_label.setFont(new java.awt.Font("Microsoft JhengHei", 1, 12)); // NOI18N
+        position_label.setBackground(new java.awt.Color(1, 14, 26));
+        position_label.setFont(new java.awt.Font("Fira Code Medium", 0, 12)); // NOI18N
         position_label.setText(" Lín. 0, Col. 0 ");
+        position_label.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(31, 44, 78), 2, true));
         position_label.setOpaque(true);
 
         update_button.setText("Actualizar");
@@ -294,10 +310,10 @@ public class MainGUI extends javax.swing.JFrame {
                                 .addGap(18, 18, 18))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(190, 190, 190)
-                                .addComponent(analize_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(90, 90, 90)
                                 .addComponent(generate_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 217, Short.MAX_VALUE)))
+                                .addGap(101, 101, 101)
+                                .addComponent(analize_button, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 206, Short.MAX_VALUE)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -325,15 +341,15 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(analize_button)
                     .addComponent(generate_button)
+                    .addComponent(analize_button)
                     .addComponent(clear_button)
                     .addComponent(update_button))
                 .addGap(5, 5, 5)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Archivo");
@@ -378,16 +394,6 @@ public class MainGUI extends javax.swing.JFrame {
         });
         jMenu1.add(saveas_dialog);
 
-        generate_dialog.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        generate_dialog.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/xml-file-icon.png"))); // NOI18N
-        generate_dialog.setText("Generar XML de salida");
-        generate_dialog.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generate_dialogActionPerformed(evt);
-            }
-        });
-        jMenu1.add(generate_dialog);
-
         jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
@@ -406,7 +412,7 @@ public class MainGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void analize_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analize_buttonActionPerformed
+    private void generate_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_buttonActionPerformed
         if (file_name.isEmpty()) {
             if (saveFileAs() == true) {
                 Output_success("Se guardó exitosamente");
@@ -415,14 +421,24 @@ public class MainGUI extends javax.swing.JFrame {
             }
         }
 
+        initDirectories();
         Data.clear();
-        Trees.clear();
+        AFDs.clear();
         try {
             scanner = new Analyzers.Scanner(new StringReader(input_text.getText()));
             parser = new Analyzers.Parser(scanner);
-            parser.parse();
+            try {
+                parser.parse();
+            } catch (Exception ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             ArrayList<ArrayList<String>> symbols = scanner.getSymbols();
+
+            for (ArrayList<String> sym : symbols) {
+                System.out.println(sym);
+            }
+
             ArrayList<ArrayList<String>> lexical_errors = scanner.getErrors();
 
             ArrayList<ArrayList<String>> sets = parser.getSets();
@@ -431,35 +447,44 @@ public class MainGUI extends javax.swing.JFrame {
             ArrayList<ArrayList<String>> syntactic_errors = parser.getErrors();
 
             if (Reporter.reportErrors(lexical_errors, syntactic_errors, file_name)) {
-                Output_error("Se generó un reporte de errores en data\\ERRORES_201901698\\" + file_name + ".png");
+                Output_error("Se generó un reporte de errores en data\\Errores\\" + file_name + ".png");
                 return;
             }
 
             for (ArrayList<String> expression : expressions) {
                 Tree tree = new Tree(expression);
-                Output_highlight(expression.get(0));
+                Output_highlight(tree.id);
 
-                if (Reporter.graphTree(tree, file_name)) {
-                    Output("Se generó el árbol en data\\ARBOLES_201901698\\" + file_name + "\\" + tree.id + ".png");
-                } else {
-                    Output_error("Error al generar el árbol");
+                try {
+                    // AFND
+                    if (Reporter.graphTree(tree, file_name)) {
+                        Output("Se generó el árbol en data\\Arboles\\" + file_name + "\\" + tree.id + ".png");
+                    } else {
+                        Output_error("Error al generar el árbol");
+                    }
+                    if (Reporter.graphFollowTable(tree, file_name)) {
+                        Output("Se generó la tabla de siguientes en data\\Siguientes\\" + file_name + "\\" + tree.id + ".png");
+                    } else {
+                        Output_error("Error al generar la tabla de siguientes");
+                    }
+                    if (Reporter.graphTransitionTable(tree, file_name)) {
+                        Output("Se generó la tabla de transiciones en data\\Transiciones\\" + file_name + "\\" + tree.id + ".png");
+                    } else {
+                        Output_error("Error al generar la tabla de transiciones");
+                    }
+
+                    AFD afd = Reporter.graphAFD(tree, file_name);
+
+                    if (afd != null) {
+                        Output("Se generó el AFD en data\\AFD\\" + file_name + "\\" + tree.id + ".png");
+                    } else {
+                        Output_error("Error al generar el AFD");
+                    }
+
+                    AFDs.put(tree.id, afd);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (Reporter.graphFollowTable(tree, file_name)) {
-                    Output("Se generó la tabla de siguientes en data\\SIGUIENTES_201901698\\" + file_name + "\\" + tree.id + ".png");
-                } else {
-                    Output_error("Error al generar la tabla de siguientes");
-                }
-                if (Reporter.graphTransitionTable(tree, file_name)) {
-                    Output("Se generó la tabla de transiciones en data\\TRANSICIONES_201901698\\" + file_name + "\\" + tree.id + ".png");
-                } else {
-                    Output_error("Error al generar la tabla de transiciones");
-                }
-                if (Reporter.graphAFD(tree, file_name)) {
-                    Output("Se generó el AFD en data\\AFD_201901698\\" + file_name + "\\" + tree.id + ".png");
-                } else {
-                    Output_error("Error al generar el AFD");
-                }
-                Trees.add(tree);
             }
 
             Data.put("symbols", symbols);
@@ -472,69 +497,79 @@ public class MainGUI extends javax.swing.JFrame {
         }
 
         updateTree();
-    }//GEN-LAST:event_analize_buttonActionPerformed
+    }//GEN-LAST:event_generate_buttonActionPerformed
 
-    private void generate_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_buttonActionPerformed
+    private void analize_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analize_buttonActionPerformed
         try {
             if (Data.isEmpty()) {
-                Output_error("No hay información");
-                return;
+
+                int op = JOptionPane.showConfirmDialog(this, "No hay autómatas generados. ¿Deseas generarlos?", "No hay información", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                if (op == JOptionPane.NO_OPTION) {
+                    return;
+                }
+                generate_button.doClick();
             }
 
-            String name = main_path + "\\data\\SALIDAS_201901698\\" + file_name;
+            initDirectories();
+
+            String name = main_path + "\\data\\Salidas\\" + file_name;
             file = new File(name + ".json");
             file.createNewFile();
             FileWriter writer = new FileWriter(file);
 
-            String s = "{\n";
+            String s = "[\n";
 
             for (ArrayList comparation : Data.get("comparations")) {
 
                 s += "\t{\n";
                 String lexema = (String) comparation.get(1);
-                s += "\t\t\"Valor\":\'" + lexema + "\',\n";
+                s += "\t\t\"Valor\":" + lexema + ",\n";
 
                 String id = (String) comparation.get(0);
                 s += "\t\t\"ExpresionRegular\":\"" + id + "\",\n";
 
-                Tree tree = null;
+                AFD afd = null;
 
-                for (Tree t : Trees) {
-                    if (t.id.equals(id)) {
-                        tree = t;
+                for (Map.Entry<String, AFD> entry : AFDs.entrySet()) {
+                    if (entry.getKey().equals(id)) {
+                        afd = entry.getValue();
                     }
                 }
 
-                if (tree == null) {
-                    Output_error("No hay arbol para '" + lexema + "'");
+                if (afd == null) {
+                    Output_error("No hay AFD para '" + lexema + "'");
                     continue;
                 }
 
-                Analyzer.setData(Data.get("symbols"), Data.get("sets"), tree);
-
-                if (Analyzer.Analyze(lexema)) {
-                    s += "\t\t\"Resultado\":\"Cadena Válida\",\n";
+                if (afd.Evaluate(lexema.substring(1, lexema.length() - 1))) {
+                    s += "\t\t\"Resultado\":\"Cadena Válida\"\n";
                 } else {
-                    s += "\t\t\"Resultado\":\"Cadena No Válida\",\n";
+                    s += "\t\t\"Resultado\":\"Cadena No Válida\"\n";
+                    Output_error(afd.getMessage());
                 }
-                s += "\t},\n";
+                s += "\t}";
+
+                if (!(Data.get("comparations").get(Data.get("comparations").size() - 1) == comparation)) {
+                    s += ",";
+                }
+                s += "\n";
+
             }
 
-            s += "\n}";
+            s += "]";
 
             writer.write(s);
             writer.close();
+
+            Output("Se generó la salida en data\\Salidas\\" + file_name + ".png");
 
         } catch (IOException e) {
             Output_error("Error fatal");
             System.out.println(e.getCause());
         }
 
-    }//GEN-LAST:event_generate_buttonActionPerformed
-
-    private void generate_dialogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generate_dialogActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_generate_dialogActionPerformed
+    }//GEN-LAST:event_analize_buttonActionPerformed
 
     private void clear_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_buttonActionPerformed
         output_text.setText("");
@@ -566,8 +601,10 @@ public class MainGUI extends javax.swing.JFrame {
                 } else if (file_temp.getName().toLowerCase().endsWith(".json")) {
                     FileInputStream inputStream;
                     try {
-                        inputStream = new FileInputStream(file);
+                        Output_highlight(file_temp.getName());
+                        inputStream = new FileInputStream(file_temp);
                         Output(readFromInputStream(inputStream));
+                        inputStream.close();
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
@@ -579,10 +616,6 @@ public class MainGUI extends javax.swing.JFrame {
                     int op;
 
                     if (file_temp.isDirectory()) {
-                        if (file_temp.getName().endsWith("201901698")) {
-                            return;
-                        }
-
                         op = JOptionPane.showConfirmDialog(this, "¿Quieres eliminar '" + file_temp.getName() + "'?", "Eliminar carpeta", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                         if (op == JOptionPane.YES_OPTION) {
@@ -623,6 +656,10 @@ public class MainGUI extends javax.swing.JFrame {
         position_label.setText(" Lín. " + line + ", Col." + column + " ");
     }//GEN-LAST:event_input_textMouseClicked
 
+    private void update_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_buttonActionPerformed
+        updateTree();
+    }//GEN-LAST:event_update_buttonActionPerformed
+
     private void input_textKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_input_textKeyReleased
         if (!input_text.isEnabled()) {
             return;
@@ -640,10 +677,6 @@ public class MainGUI extends javax.swing.JFrame {
 
         position_label.setText(" Lín. " + line + ", Col." + column + " ");
     }//GEN-LAST:event_input_textKeyReleased
-
-    private void update_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_buttonActionPerformed
-        updateTree();
-    }//GEN-LAST:event_update_buttonActionPerformed
 
     private static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
@@ -672,6 +705,9 @@ public class MainGUI extends javax.swing.JFrame {
             }
         }
 
+        Data.clear();
+        AFDs.clear();
+
         input_text.setText(
             "{\n\n\n"
             + "%%\n"
@@ -680,8 +716,8 @@ public class MainGUI extends javax.swing.JFrame {
 
         if (!input_text.isEnabled()) {
             input_text.setEnabled(true);
-            generate_button.setEnabled(true);
             analize_button.setEnabled(true);
+            generate_button.setEnabled(true);
         }
 
         Font font = file_name_label.getFont();
@@ -715,13 +751,16 @@ public class MainGUI extends javax.swing.JFrame {
 
             if (file != null) {
 
+                Data.clear();
+                AFDs.clear();
+
                 inputStream = new FileInputStream(file);
                 input_text.setText(readFromInputStream(inputStream));
 
                 if (!input_text.isEnabled()) {
                     input_text.setEnabled(true);
-                    generate_button.setEnabled(true);
                     analize_button.setEnabled(true);
+                    generate_button.setEnabled(true);
                 }
 
                 Font font = file_name_label.getFont();
@@ -1035,7 +1074,6 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JTree data_tree;
     private javax.swing.JLabel file_name_label;
     private javax.swing.JToggleButton generate_button;
-    private javax.swing.JMenuItem generate_dialog;
     private javax.swing.JTextArea input_text;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

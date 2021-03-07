@@ -23,7 +23,9 @@
  */
 package Graphing;
 
+import Structs.AFD;
 import Structs.Node;
+import Structs.State;
 import Structs.Transition;
 import Structs.TransitionTable;
 import Structs.Tree;
@@ -31,6 +33,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -48,7 +52,7 @@ public class Reporter {
 
     public boolean graphTree(Tree tree, String folder) throws IOException {
         try {
-            String name = main_path + "\\ARBOLES_201901698\\" + folder;
+            String name = main_path + "\\Arboles\\" + folder;
             file = new File(name);
             file.mkdir();
 
@@ -86,7 +90,8 @@ public class Reporter {
             return temp_str;
         }
 
-        temp_str += "node_" + index + " [fontsize=13 shape=box fontname = \"helvetica\" label=\"" + node.first + " " + node.lexeme + " " + node.last + "\n" + node.anullable + "\"];\n";
+        temp_str += "node_" + index + " [fontsize=13 fontname = \"helvetica\" label=\"" + node.first + " " + node.lexeme + " " + node.last + "\\n" + node.anullable + "\"];\n"
+            + "";
 
         String left_i = "l", right_i = "r";
 
@@ -102,7 +107,7 @@ public class Reporter {
 
     public boolean graphFollowTable(Tree tree, String folder) throws IOException {
         try {
-            String name = main_path + "\\SIGUIENTES_201901698\\" + folder;
+            String name = main_path + "\\Siguientes\\" + folder;
             file = new File(name);
             file.mkdir();
 
@@ -139,7 +144,7 @@ public class Reporter {
 
     public boolean graphTransitionTable(Tree tree, String folder) throws IOException {
         try {
-            String name = main_path + "\\TRANSICIONES_201901698\\" + folder;
+            String name = main_path + "\\Transiciones\\" + folder;
             file = new File(name);
             file.mkdir();
 
@@ -183,7 +188,7 @@ public class Reporter {
 
     public boolean graphAFND(Tree tree, String folder) throws IOException {
         try {
-            String name = main_path + "\\AFND_201901698\\" + folder;
+            String name = main_path + "\\AFND\\" + folder;
             file = new File(name);
             file.mkdir();
 
@@ -197,9 +202,14 @@ public class Reporter {
         }
     }
 
-    public boolean graphAFD(Tree tree, String folder) throws IOException {
+    public AFD graphAFD(Tree tree, String folder) throws IOException {
+
+        AFD Afd = new AFD();
+
+        Map<State, ArrayList<ArrayList<String>>> states = new HashMap<>();
+
         try {
-            String name = main_path + "\\AFD_201901698\\" + folder;
+            String name = main_path + "\\AFD\\" + folder;
             file = new File(name);
             file.mkdir();
 
@@ -215,27 +225,66 @@ public class Reporter {
                 + "    nodesep=0.4;\n"
                 + "    ranksep=0.5;\n\n"
                 + "    rankdir=LR;\n\n";
+            
+            State initial_state=null;
 
             for (ArrayList state : tran.states) {
                 String state_name = (String) state.get(0);
-                if (((boolean) state.get(3)) == true) {
+                boolean isfinal = (boolean) state.get(3);
+
+                if (isfinal) {
                     s += state_name + " [shape=doublecircle];\n";
                 }
+
+                State state_temp = new State(state_name, isfinal);
+                ArrayList<ArrayList<String>> state_list = new ArrayList<>();
+                
+                if(initial_state==null){
+                    initial_state=state_temp;
+                }
+
                 for (Object tr : (ArrayList) state.get(2)) {
                     Transition t = (Transition) tr;
                     s += state_name + " -> " + t.finalState + " [label=\"" + t.transition + "\"];\n";
+
+                    ArrayList<String> list_temp = new ArrayList<>();
+                    list_temp.add(t.transition);
+                    list_temp.add(t.finalState);
+                    state_list.add(list_temp);
                 }
+
+                states.put(state_temp, state_list);
             }
-            s += "} ";
+            s += "}";
 
             writer.write(s);
             writer.close();
 
             String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
             Runtime.getRuntime().exec(command);
-            return true;
+
+            for (Map.Entry<State, ArrayList<ArrayList<String>>> entry : states.entrySet()) {
+                State state = entry.getKey();
+
+                for (ArrayList<String> data : entry.getValue()) {
+
+                    State next_state = null;
+
+                    for (Map.Entry<State, ArrayList<ArrayList<String>>> state_temp : states.entrySet()) {
+                        if (state_temp.getKey().getName().equals(data.get(1))) {
+                            next_state = state_temp.getKey();
+                        }
+                    }
+
+                    state.Next(data.get(0), next_state);
+                }
+            }
+            
+            Afd.setInitialState(initial_state);
+            
+            return Afd;
         } catch (IOException e) {
-            return false;
+            return null;
         }
     }
 
@@ -245,7 +294,7 @@ public class Reporter {
                 return false;
             }
 
-            String name = main_path + "\\ERRORES_201901698\\" + id + ".dot";
+            String name = main_path + "\\Errores\\" + id + ".dot";
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
@@ -257,7 +306,7 @@ public class Reporter {
             header.add("Línea");
             header.add("Columna");
 
-            file = new File(main_path + "\\data\\ERRORES_201901698\\" + id + ".html");
+            file = new File(main_path + "\\data\\Errores\\" + id + ".html");
             file.createNewFile();
 
             String s = "<!DOCTYPE html>\n"

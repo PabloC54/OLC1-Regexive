@@ -8,34 +8,30 @@ package Analyzers;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int string = 20;
-  public static final int especial = 16;
-  public static final int porcentajes = 17;
-  public static final int cerr_positiva = 14;
-  public static final int flecha = 10;
-  public static final int concat = 11;
-  public static final int conj = 18;
+  public static final int string = 18;
+  public static final int especial = 14;
+  public static final int cerr_positiva = 12;
+  public static final int porcentajes = 15;
+  public static final int flecha = 8;
+  public static final int concat = 9;
+  public static final int conj = 16;
   public static final int L = 2;
-  public static final int cerr_kleene = 13;
-  public static final int disy = 12;
+  public static final int cerr_kleene = 11;
+  public static final int set = 3;
+  public static final int disy = 10;
   public static final int EOF = 0;
-  public static final int L_set = 3;
-  public static final int llaveB = 7;
-  public static final int llaveA = 6;
-  public static final int id = 19;
-  public static final int puntocoma = 9;
-  public static final int D_set = 4;
+  public static final int llaveB = 5;
+  public static final int llaveA = 4;
+  public static final int id = 17;
+  public static final int puntocoma = 7;
   public static final int error = 1;
-  public static final int cerr_bool = 15;
-  public static final int A_set = 5;
-  public static final int dospuntos = 8;
+  public static final int cerr_bool = 13;
+  public static final int dospuntos = 6;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "L",
-  "L_set",
-  "D_set",
-  "A_set",
+  "set",
   "llaveA",
   "llaveB",
   "dospuntos",

@@ -63,7 +63,7 @@ parser code
 :}
 
 terminal String L;
-terminal String L_set, D_set, A_set;
+terminal String set;
 terminal String llaveA, llaveB;
 terminal String dospuntos, puntocoma, flecha;
 terminal String concat, disy, cerr_kleene, cerr_positiva, cerr_bool;
@@ -75,8 +75,7 @@ terminal String string;
 
 non terminal INI, S, C;
 non terminal DEFINICION_CONJUNTO, DEFINICION_EXPRESION_REGULAR, COMPARACION;
-non terminal CONJUNTO, EXPRESION_REGULAR;
-non terminal TERMINO;
+non terminal EXPRESION_REGULAR, TERMINO;
 
 precedence left concat, disy;
 precedence right cerr_kleene, cerr_positiva, cerr_bool;
@@ -102,13 +101,7 @@ C ::=
 ;
 
 DEFINICION_CONJUNTO ::=
-  conj dospuntos id:a flecha CONJUNTO:b puntocoma  {:Set(a, (String) b);:}
-;
-
-CONJUNTO ::=
-  L_set:a                                          {:RESULT=a;:}
-| D_set:a                                          {:RESULT=a;:}
-| A_set:a                                          {:RESULT=a;:}
+  conj dospuntos id:a flecha set:b puntocoma  {:Set(a, b);:}
 ;
 
 DEFINICION_EXPRESION_REGULAR ::= 
@@ -126,7 +119,7 @@ EXPRESION_REGULAR ::=
 
 TERMINO ::=
   L:a                                              {:expression.add(0, a);:}
-| string:a                                         {:expression.add(0, a);:}
+| string:a                                         {:expression.add(0,"\\"+ a.substring(0,a.length()-1)+"\\\"");:}
 | llaveA id:a llaveB                               {:expression.add(0, a);:}
 | especial:a                                       {:expression.add(0, a);:}
 ;

@@ -1,9 +1,0 @@
- digraph G {
- node [label="\N", fontsize=13 shape=plaintext fontname = "helvetica"];
- Foo [label=<
-<table border="0" cellborder="1" cellspacing="0">
-  <tr><td><i>Estado</i></td><td><i>Siguientes</i></td></tr>
-<tr><td align="left">1  Digito</td><td>[3]</td></tr>
-<tr><td align="left">2  Letra</td><td>[3]</td></tr>
-<tr><td align="left">3  Letra</td><td>[4]</td></tr>
-</table>>];} 

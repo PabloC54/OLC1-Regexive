@@ -19,17 +19,13 @@ public class Tree {
     public String id;
 
     public Tree(ArrayList<String> expression) {
+        System.out.println("expresion : " + expression);
         id = expression.remove(0);
+        expression.add(0, "#");
         expression.add(0, ".");
-        expression.add("#");
         Collections.reverse(expression);
 
         int num_leave = 1;
-        for (String str : expression) {
-            if (!str.equals(".") && !str.equals("|") && !str.equals("*") && !str.equals("+") && !str.equals("?")) {
-                num_leave += 1;
-            }
-        }
 
         for (String symbol : expression) {
             Node left_node, right_node, node;
@@ -38,13 +34,13 @@ public class Tree {
                 case "|":
                     left_node = (Node) pile.pop();
                     right_node = (Node) pile.pop();
-                    pile.push(new Node(symbol, Types.DISYUNCTION, 0, left_node, right_node, leaves, table));
+                    pile.push(new Node(symbol, Types.DISYUNCTION, 0, right_node, left_node, leaves, table));
                     break;
 
                 case ".":
                     left_node = (Node) pile.pop();
                     right_node = (Node) pile.pop();
-                    pile.push(new Node(symbol, Types.CONCATENATION, 0, left_node, right_node, leaves, table));
+                    pile.push(new Node(symbol, Types.CONCATENATION, 0, right_node, left_node, leaves, table));
                     break;
 
                 case "*":
@@ -63,10 +59,10 @@ public class Tree {
                     break;
 
                 default:
-                    num_leave -= 1;
                     node = new Node(symbol, Types.LEAVE, num_leave, null, null, leaves, table);
                     pile.push(node);
                     leaves.add(node);
+                    num_leave += 1;
                     break;
             }
         }

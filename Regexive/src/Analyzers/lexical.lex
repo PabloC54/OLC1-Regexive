@@ -16,7 +16,7 @@ import java.util.ArrayList;
     private ArrayList<ArrayList<String>> Symbols = new ArrayList<>();
     private ArrayList<ArrayList<String>> Errors = new ArrayList<>();
 
-    Symbol symbol(int line, int column, String lexeme, String token, int s){
+    private Symbol symbol(int line, int column, String lexeme, String token, int s){
         ArrayList<String> v = new ArrayList<>();
         v.add(String.valueOf(line));
         v.add(String.valueOf(column));
@@ -28,7 +28,7 @@ import java.util.ArrayList;
         return new Symbol(s, line, column, yytext());
     }
 
-    void Error(int line, int column, String lexem){    
+    private void Error(int line, int column, String lexem){    
         ArrayList<String> v = new ArrayList<>();
         v.add(String.valueOf(line));
         v.add(String.valueOf(column));
@@ -55,14 +55,12 @@ L=[a-zA-ZñÑ]
 D=[0-9]
 A=[\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7D]
 blanco=[\040\t]
-L_set=({L}(,{L})+)|([a-zñ]~[a-zñ])|([A-ZÑ]~[A-ZÑ])
-D_set=({D}(,{D})+)|({D}~{D})
-A_set=({A}(,{A})+)|({A}~{A})
+set=(({L}|{D}|{A})\040*(,\040*({L}|{D}|{A})\040*)+)|(({L}|{D}|{A})\040*~\040*({L}|{D}|{A}))
 llaveA="{"
 llaveB="}"
 dospuntos=":"
 puntocoma=";"
-flecha="->"
+flecha=-\040*>
 concat="."
 disy="|"
 cerr_kleene="*"
@@ -72,9 +70,9 @@ especial=(\\n)|(\\')|(\\\")
 porcentajes="%%"{blanco}*\n+{blanco}*"%%"
 conj="conj"
 id={L}({L}|{D}|"_")*
-string=\"(.|{blanco})*\"
-comentario=//(.|{blanco})*\n
-comentario_multilinea=<!(.|{blanco}|\n)*!>
+string=[\"'](((\\\")|(\\n)|(\\\'))|[^\\\"\n])+[\"']
+comentario=//(.|{blanco})*
+comentario_multilinea=<!({blanco}|\n|[^!>])*!>
 
 %%
 
@@ -84,10 +82,8 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 {blanco}                    {}
 
 {llaveA}        {return symbol(yyline, yychar, yytext(), "llaveA", sym.llaveA);}
-{L_set}         {return symbol(yyline, yychar, yytext(), "L_set", sym.L_set);}
+{set}           {return symbol(yyline, yychar, yytext(), "set", sym.set);}
 {llaveB}        {return symbol(yyline, yychar, yytext(), "llaveB", sym.llaveB);}
-{D_set}         {return symbol(yyline, yychar, yytext(), "D_set", sym.D_set);}
-{A_set}         {return symbol(yyline, yychar, yytext(), "A_set", sym.A_set);}
 {dospuntos}     {return symbol(yyline, yychar, yytext(), "dospuntos", sym.dospuntos);}
 {puntocoma}     {return symbol(yyline, yychar, yytext(), "puntocoma", sym.puntocoma);}
 {flecha}        {return symbol(yyline, yychar, yytext(), "flecha", sym.flecha);}
@@ -101,7 +97,7 @@ comentario_multilinea=<!(.|{blanco}|\n)*!>
 {conj}          {return symbol(yyline, yychar, yytext(), "conj", sym.conj);}
 {L}             {return symbol(yyline, yychar, yytext(), "L", sym.L);}
 {id}            {return symbol(yyline, yychar, yytext(), "id", sym.id);}
-{string}        {return symbol(yyline, yychar, yytext(), "string", sym.string);}
+{string}        {return symbol(yyline, yychar, "\\"+yytext().substring(0, yytext().length()-1)+"\\\"", "string", sym.string);}
 
 
 . {
