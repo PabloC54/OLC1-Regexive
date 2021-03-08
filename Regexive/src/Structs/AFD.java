@@ -77,7 +77,7 @@ public class AFD {
 
     private boolean Buscar(String lexeme, State state) {
 
-        if (lexeme.isEmpty()) {
+        if (lexeme.isEmpty() && state.is_final_state) {
             return true;
         }
 

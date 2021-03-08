@@ -24,6 +24,7 @@
 package Graphing;
 
 import Structs.AFD;
+import Structs.AFND;
 import Structs.Node;
 import Structs.State;
 import Structs.Transition;
@@ -46,7 +47,10 @@ public class Reporter {
     File file;
     FileWriter writer;
 
+    private int count;
+
     public Reporter(String main_path) {
+        this.count = 0;
         this.main_path = main_path;
     }
 
@@ -196,7 +200,30 @@ public class Reporter {
             file = new File(name + ".dot");
             file.createNewFile();
             writer = new FileWriter(file);
+
+            AFND afnd = new AFND(tree);
+
+            String s = " digraph G {\n"
+                + "    node [shape=circle fontsize=13 fontname = \"helvetica\"];\n"
+                + "    nodesep=0.4;\n"
+                + "    ranksep=0.5;\n\n"
+                + "    rankdir=LR;\n\n";
+
+            for (Transition t : afnd.getTransitions()) {
+                s += t.initialState + " -> " + t.finalState + " [label=\"" + t.transition + "\"];\n";
+            }
+
+            s += afnd.getLast() + " [shape=doublecircle];\n";
+
+            s += "}";
+
+            writer.write(s);
+            writer.close();
+
+            String command = "dot -Tpng " + name + ".dot -o " + name + ".png";
+            Runtime.getRuntime().exec(command);
             return true;
+
         } catch (IOException e) {
             return false;
         }
@@ -221,12 +248,12 @@ public class Reporter {
             TransitionTable tran = new TransitionTable(tree.getRoot(), tree.getTable(), tree.getLeaves());
 
             String s = " digraph G {\n"
-                + "    node [fontsize=13 fontname = \"helvetica\"];\n"
+                + "    node [shape=circle fontsize=13 fontname = \"helvetica\"];\n"
                 + "    nodesep=0.4;\n"
                 + "    ranksep=0.5;\n\n"
                 + "    rankdir=LR;\n\n";
-            
-            State initial_state=null;
+
+            State initial_state = null;
 
             for (ArrayList state : tran.states) {
                 String state_name = (String) state.get(0);
@@ -238,9 +265,9 @@ public class Reporter {
 
                 State state_temp = new State(state_name, isfinal);
                 ArrayList<ArrayList<String>> state_list = new ArrayList<>();
-                
-                if(initial_state==null){
-                    initial_state=state_temp;
+
+                if (initial_state == null) {
+                    initial_state = state_temp;
                 }
 
                 for (Object tr : (ArrayList) state.get(2)) {
@@ -279,9 +306,9 @@ public class Reporter {
                     state.Next(data.get(0), next_state);
                 }
             }
-            
+
             Afd.setInitialState(initial_state);
-            
+
             return Afd;
         } catch (IOException e) {
             return null;
@@ -290,12 +317,7 @@ public class Reporter {
 
     public boolean reportErrors(ArrayList<ArrayList<String>> lexical, ArrayList<ArrayList<String>> syntactic, String id) {
         try {
-            if (lexical.isEmpty() && syntactic.isEmpty()) {
-                return false;
-            }
-
-            String name = main_path + "\\Errores\\" + id + ".dot";
-            file = new File(name + ".dot");
+            file = new File(main_path + "\\Errores\\" + id + ".html");
             file.createNewFile();
             writer = new FileWriter(file);
 
@@ -306,38 +328,30 @@ public class Reporter {
             header.add("Línea");
             header.add("Columna");
 
-            file = new File(main_path + "\\data\\Errores\\" + id + ".html");
-            file.createNewFile();
-
             String s = "<!DOCTYPE html>\n"
                 + "\t<html>\n"
                 + "\t\t<head>\n"
                 + "\t\t\t<title>Errores</title>\n"
-                + "\t\t\t<link rel='stylesheet' type='text/css' href='style.css'/>\n"
+                + "\t\t\t<link rel='stylesheet' type='text/css' href='../../style.css'/>\n"
                 + "\t\t</head>\n"
                 + "\t\t<body>\n";
-            writer.write(s);
 
-            s = "\t\t\t<table class='container'>\n"
+            s += "\t\t\t<table class='container'>\n"
                 + "\t\t\t\t<thead>\n"
                 + "\t\t\t\t\t<tr>\n";
-            writer.write(s);
 
-            s = "";
             for (String h : header) {
                 s += "\t\t\t\t\t\t<th><h1>" + h + "</h1></th>\n";
             }
-            writer.write(s);
 
-            s = "\t\t\t\t\t</tr>\n"
+            s += "\t\t\t\t\t</tr>\n"
                 + "\t\t\t\t</thead>\n\n"
                 + "\t\t\t\t<tbody>\n";
-            writer.write(s);
 
             int index = 1;
             if (!lexical.isEmpty()) {
                 for (int i = 0; i < lexical.size(); i++) {
-                    s = "\t\t\t\t\t<tr>\n"
+                    s += "\t\t\t\t\t<tr>\n"
                         + "\t\t\t\t\t\t<td>" + index + "</td>\n"
                         + "\t\t\t\t\t\t<td>Léxico</td>\n";
 
@@ -347,14 +361,13 @@ public class Reporter {
 
                     s += "\t\t\t\t\t</tr>\n\n";
 
-                    writer.write(s);
                     index += 1;
                 }
             }
 
             if (!syntactic.isEmpty()) {
                 for (int i = 0; i < syntactic.size(); i++) {
-                    s = "\t\t\t\t\t<tr>\n"
+                    s += "\t\t\t\t\t<tr>\n"
                         + "\t\t\t\t\t\t<td>" + index + "</td>\n"
                         + "\t\t\t\t\t\t<td>Sintáctico</td>\n";
 
@@ -364,12 +377,11 @@ public class Reporter {
 
                     s += "\t\t\t\t\t</tr>\n\n";
 
-                    writer.write(s);
                     index += 1;
                 }
             }
 
-            s = "\t\t\t\t</tbody>\n"
+            s += "\t\t\t\t</tbody>\n"
                 + "\t\t\t</table>\n"
                 + "\t\t</body>\n"
                 + "\t</html>";
@@ -380,6 +392,7 @@ public class Reporter {
             return true;
 
         } catch (IOException e) {
+            System.out.println(e.getCause());
             return false;
         }
     }

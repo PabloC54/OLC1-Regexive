@@ -6,120 +6,93 @@ Regexive es un software gráfico desarrollado en Java.
 
 - [1. Manual de Usuario](#1-manual-de-usuario)
   - [1.1. Índice](#11-índice)
-- [2. Manual de Usuario](#2-manual-de-usuario)
-  - [2.1. Introduccion](#21-introduccion)
-  - [2.2. Glosario](#22-glosario)
-  - [2.3. Uso de Regexive](#23-uso-de-regexive)
-  - [2.4. Interfaz Gráfica](#24-interfaz-gráfica)
-    - [2.4.1. Editor de texto](#241-editor-de-texto)
-    - [2.4.2. Árbol de directorios](#242-árbol-de-directorios)
-    - [2.4.3. Terminal de salida](#243-terminal-de-salida)
-    - [2.4.4. Generar autómata](#244-generar-autómata)
-    - [2.4.5. Analizar entrada](#245-analizar-entrada)
-    - [2.4.6. Limpiar](#246-limpiar)
-    - [2.4.7. Actualizar](#247-actualizar)
-    - [2.4.8. Nuevo](#248-nuevo)
-    - [2.4.9. Abrir](#249-abrir)
-    - [2.4.10. Guardar](#2410-guardar)
-    - [2.4.11. Guardar como](#2411-guardar-como)
-  - [2.5. Lenguaje OLC](#25-lenguaje-olc)
-    - [2.5.1. Comentarios](#251-comentarios)
-    - [2.5.2. Estructura general](#252-estructura-general)
-    - [2.5.3. Definición de conjuntos](#253-definición-de-conjuntos)
-    - [2.5.4. Definición de expresiones regulares](#254-definición-de-expresiones-regulares)
-    - [2.5.5. Definición de una comparación](#255-definición-de-una-comparación)
-    - [2.5.6. Ejemplar de un archivo OLC](#256-ejemplar-de-un-archivo-olc)
-  - [2.6. Flujo de la Aplicación](#26-flujo-de-la-aplicación)
+  - [1.2. Introduccion](#12-introduccion)
+  - [1.3. Glosario](#13-glosario)
+  - [1.4. Uso de Regexive](#14-uso-de-regexive)
+  - [1.5. Interfaz Gráfica](#15-interfaz-gráfica)
+    - [1.5.1. Editor de texto](#151-editor-de-texto)
+    - [1.5.2. Árbol de directorios](#152-árbol-de-directorios)
+    - [1.5.3. Terminal de salida](#153-terminal-de-salida)
+    - [1.5.4. Generar autómata](#154-generar-autómata)
+    - [1.5.5. Analizar entrada](#155-analizar-entrada)
+    - [1.5.6. Limpiar](#156-limpiar)
+    - [1.5.7. Actualizar](#157-actualizar)
+    - [1.5.8. Nuevo](#158-nuevo)
+    - [1.5.9. Abrir](#159-abrir)
+    - [1.5.10. Guardar](#1510-guardar)
+    - [1.5.11. Guardar como](#1511-guardar-como)
+  - [1.6. Lenguaje OLC](#16-lenguaje-olc)
+    - [1.6.1. Comentarios](#161-comentarios)
+    - [1.6.2. Estructura general](#162-estructura-general)
+    - [1.6.3. Definición de conjuntos](#163-definición-de-conjuntos)
+    - [1.6.4. Definición de expresiones regulares](#164-definición-de-expresiones-regulares)
+    - [1.6.5. Definición de una comparación](#165-definición-de-una-comparación)
+    - [1.6.6. Ejemplar de un archivo OLC](#166-ejemplar-de-un-archivo-olc)
+  - [1.7. Flujo de la Aplicación](#17-flujo-de-la-aplicación)
 
-# 2. Manual de Usuario
-
-## 2.1. Introduccion
-
+## 1.2. Introduccion
 Regexive es un software que permite al usuario la definición de patrones de cadenas mediante expresiones regulares y conjuntos, así como la evaluación de cadenas de prueba, y reportación gráfica del proceso de análisis.
 
-## 2.2. Glosario
-
+## 1.3. Glosario
 | Término           | Descripción                       |
 | ----------------- | --------------------------------- |
-| hola              | saludo                            |
-| hola              | saludo                            |
 | Expresión regular | Definición de patrones de cadenas |
 | Cadena            | Secuencia de caracteres. Texto.   |
 | AFD               | Autómata finíto determinista      |
-| hola              | saludo                            |
-| hola              | saludo                            |
-| hola              | saludo                            |
-| hola              | saludo                            |
-| hola              | saludo                            |
+| UX                | User experience                   |
+| Token             | Tipo de símbolo                   |
 
 
-## 2.3. Uso de Regexive
-
+## 1.4. Uso de Regexive
 Para ejecutar Regexive es necesario tener instalado JVM. Puedes descargarlo [acá](https://www.java.com/es/download/).
 Se puede abrir el ejecutable o ejecutar el siguiente comando en el mismo directorio del ejecutable:
 ```sh
 java -jar Regexive.jar
 ```
 
-## 2.4. Interfaz Gráfica
-
+## 1.5. Interfaz Gráfica
 ![Principal](img\main-window.png)
 
 La interfaz gráfica cuenta con los siguientes elementos:
 
-### 2.4.1. Editor de texto
-
+### 1.5.1. Editor de texto
 Editor de entrada de texto. El texto analizado
 
-
-### 2.4.2. Árbol de directorios
-
+### 1.5.2. Árbol de directorios
 Visualizador del directorio de almacenamiento de reportes. Con un clic principal se pueden desplegar o contraer las carpetas, o visualizar archivos. Con un clic derecho se pueden eliminar carpetas o archivos, luego de una confirmación.
 
-### 2.4.3. Terminal de salida
-
+### 1.5.3. Terminal de salida
 Texto de salida de la aplicación. Se generan salidas al abrir archivos, al analizar entradas, etc.
 
-### 2.4.4. Generar autómata
-
+### 1.5.4. Generar autómata
 Botón que genera el autómata finito determinístico (AFD) utilizando las expresiones regulares ingresadas.
 
-### 2.4.5. Analizar entrada
-
+### 1.5.5. Analizar entrada
 Botón para analizar las comparaciones utilizando los AFD generados mediante 'Generar autómata'. Si no se han generado autómatas se pregunta si se quiere generar los autómatas.
-
-### 2.4.6. Limpiar
-
+### 1.5.6. Limpiar
 Limpia la terminal de salida.
 
-### 2.4.7. Actualizar
-
+### 1.5.7. Actualizar
 Actualiza el árbol de directorios.
 
 ![Menu](img/menu.png)
 
-### 2.4.8. Nuevo
-
+### 1.5.8. Nuevo
 Genera un nuevo archivo .olc en el editor de texto. Si no se ha guardado el archivo actual se pregunta si se desea guardar el archivo. Crear un nuevo archivo elimina los autómatas generados.
 
-### 2.4.9. Abrir
-
+### 1.5.9. Abrir
 Abre un archivo seleccionado mediante una ventana de selección. Si no se ha guardado el archivo actual se pregunta si se desea guardar el archivo. Abrir un archivo elimina los autómatas generados.
 
-### 2.4.10. Guardar
-
+### 1.5.10. Guardar
 Guarda el texto del editor de texto en el archivo abierto. Si se trata de un archivo nuevo se abre una ventana para guardar el archivo.
 
-### 2.4.11. Guardar como
-
+### 1.5.11. Guardar como
 Guarda el texto del editor de texto en un archivo nuevo o existete, seleccionado mediante una ventana.
 
-## 2.5. Lenguaje OLC
-
+## 1.6. Lenguaje OLC
 Este lenguaje permite la creación de conjuntos, la definición de expresiones regulares básicas y la evaluación de cadenas.
 
-### 2.5.1. Comentarios
-
+### 1.6.1. Comentarios
 Se pueden escribir comentarios de una línea o comentarios multilínea de la siguiente manera:
 
 ```sh
@@ -130,8 +103,7 @@ Se pueden escribir comentarios de una línea o comentarios multilínea de la sig
                                 !>
  ```
 
-### 2.5.2. Estructura general
-
+### 1.6.2. Estructura general
 La estructura general de un archivo .olc se divide en dos partes, separadas por cuatro '%', de la siguiente manera:
 
 ```sh
@@ -151,8 +123,7 @@ La estructura general de un archivo .olc se divide en dos partes, separadas por 
 }
  ```
 
- ### 2.5.3. Definición de conjuntos
-
+ ### 1.6.3. Definición de conjuntos
  Los conjuntos se pueden definir en cualquier parte del documento. La definición de un conjunto se realiza mediante la palabra reservada 'CONJ':
 
  ```sh
@@ -202,8 +173,7 @@ El caracter puede ser cualquier letra minúscula o mayúscula, un dígito o un s
  ```
 
 
- ### 2.5.4. Definición de expresiones regulares
-
+ ### 1.6.4. Definición de expresiones regulares
 La definición de una expresión regular únicamente se puede hacer antes de los cuatro '%'. Para la definicón de una expresión regular se utiliza la notación polaca (prefija). Las operaciones admitidas son:
 
  |      Operación      | Forma  |    Significado     |
@@ -247,8 +217,7 @@ Donde a, b, etc. es un caracter denotado por sí mismo, un conjunto previamente 
 }
  ```
 
-### 2.5.5. Definición de una comparación
-
+### 1.6.5. Definición de una comparación
 Las comparaciones se realizan únicamente después de los cuatro '%'. La estructura de una comparación es la siguiente:
 
   ```sh
@@ -272,8 +241,7 @@ Ejemplos:
  ```
 
 
- ### 2.5.6. Ejemplar de un archivo OLC
-
+ ### 1.6.6. Ejemplar de un archivo OLC
  ```sh
 {
     // CONJUNTOS
@@ -297,8 +265,7 @@ Ejemplos:
  ```
 
 
-## 2.6. Flujo de la Aplicación
-
+## 1.7. Flujo de la Aplicación
 Para empezar a trabajar con un archivo OLC se puede crear uno desde cero, o abrir uno existente desde el menú.
 
 La aplicación utilizará el texto en el editor para análisis, por lo que debemos cumplir con la definición del lenguaje OLC anterior descrita.

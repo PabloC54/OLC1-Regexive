@@ -222,7 +222,7 @@ public class MainGUI extends javax.swing.JFrame {
         file_name_label.setText("ninguno");
 
         output_text.setEditable(false);
-        output_text.setBackground(new java.awt.Color(1, 14, 26));
+        output_text.setBackground(new java.awt.Color(9, 11, 16));
         output_text.setFont(new java.awt.Font("Fira Code Medium", 0, 12)); // NOI18N
         output_text.setForeground(new java.awt.Color(204, 204, 204));
         output_text.setName("output_text"); // NOI18N
@@ -271,10 +271,10 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
-        position_label.setBackground(new java.awt.Color(1, 14, 26));
-        position_label.setFont(new java.awt.Font("Fira Code Medium", 0, 12)); // NOI18N
+        position_label.setBackground(new java.awt.Color(9, 11, 16));
+        position_label.setFont(new java.awt.Font("Malgun Gothic Semilight", 1, 12)); // NOI18N
         position_label.setText(" Lín. 0, Col. 0 ");
-        position_label.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(31, 44, 78), 2, true));
+        position_label.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(66, 122, 127), 2, true));
         position_label.setOpaque(true);
 
         update_button.setText("Actualizar");
@@ -349,7 +349,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Archivo");
@@ -424,79 +424,82 @@ public class MainGUI extends javax.swing.JFrame {
         initDirectories();
         Data.clear();
         AFDs.clear();
+//        try {
+        scanner = new Analyzers.Scanner(new StringReader(input_text.getText()));
+        parser = new Analyzers.Parser(scanner);
         try {
-            scanner = new Analyzers.Scanner(new StringReader(input_text.getText()));
-            parser = new Analyzers.Parser(scanner);
-            try {
-                parser.parse();
-            } catch (Exception ex) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            ArrayList<ArrayList<String>> symbols = scanner.getSymbols();
-
-            for (ArrayList<String> sym : symbols) {
-                System.out.println(sym);
-            }
-
-            ArrayList<ArrayList<String>> lexical_errors = scanner.getErrors();
-
-            ArrayList<ArrayList<String>> sets = parser.getSets();
-            ArrayList<ArrayList<String>> expressions = parser.getExpressions();
-            ArrayList<ArrayList<String>> comparations = parser.getComparations();
-            ArrayList<ArrayList<String>> syntactic_errors = parser.getErrors();
-
-            if (Reporter.reportErrors(lexical_errors, syntactic_errors, file_name)) {
-                Output_error("Se generó un reporte de errores en data\\Errores\\" + file_name + ".png");
-                return;
-            }
-
-            for (ArrayList<String> expression : expressions) {
-                Tree tree = new Tree(expression);
-                Output_highlight(tree.id);
-
-                try {
-                    // AFND
-                    if (Reporter.graphTree(tree, file_name)) {
-                        Output("Se generó el árbol en data\\Arboles\\" + file_name + "\\" + tree.id + ".png");
-                    } else {
-                        Output_error("Error al generar el árbol");
-                    }
-                    if (Reporter.graphFollowTable(tree, file_name)) {
-                        Output("Se generó la tabla de siguientes en data\\Siguientes\\" + file_name + "\\" + tree.id + ".png");
-                    } else {
-                        Output_error("Error al generar la tabla de siguientes");
-                    }
-                    if (Reporter.graphTransitionTable(tree, file_name)) {
-                        Output("Se generó la tabla de transiciones en data\\Transiciones\\" + file_name + "\\" + tree.id + ".png");
-                    } else {
-                        Output_error("Error al generar la tabla de transiciones");
-                    }
-
-                    AFD afd = Reporter.graphAFD(tree, file_name);
-
-                    if (afd != null) {
-                        Output("Se generó el AFD en data\\AFD\\" + file_name + "\\" + tree.id + ".png");
-                    } else {
-                        Output_error("Error al generar el AFD");
-                    }
-
-                    AFDs.put(tree.id, afd);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            Data.put("symbols", symbols);
-            Data.put("sets", sets);
-            Data.put("comparations", comparations);
-
-        } catch (Exception e) {
-            Output_error("Error fatal");
-            System.out.println(e.getCause());
+            parser.parse();
+        } catch (Exception ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        updateTree();
+        ArrayList<ArrayList<String>> symbols = scanner.getSymbols();
+        ArrayList<ArrayList<String>> lexical_errors = scanner.getErrors();
+
+        ArrayList<ArrayList<String>> sets = parser.getSets();
+        ArrayList<ArrayList<String>> expressions = parser.getExpressions();
+        ArrayList<ArrayList<String>> comparations = parser.getComparations();
+        ArrayList<ArrayList<String>> syntactic_errors = parser.getErrors();
+
+        if (!lexical_errors.isEmpty() || !syntactic_errors.isEmpty()) {
+            if (Reporter.reportErrors(lexical_errors, syntactic_errors, file_name)) {
+                Output("Se encontraron errores en la entrada. Se generó un reporte de errores en data\\Errores\\" + file_name + ".png");
+            } else {
+                Output_error("Error al generar el reporte de errores");
+            }
+            return;
+        }
+
+        for (ArrayList<String> expression : expressions) {
+            Tree tree = new Tree(expression);
+            Output_highlight(tree.id);
+
+            try {
+                if (Reporter.graphAFND(tree, file_name)) {
+                    Output("Se generó el AFND en data\\AFND\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar el AFND");
+                }
+                if (Reporter.graphTree(tree, file_name)) {
+                    Output("Se generó el árbol en data\\Arboles\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar el árbol");
+                }
+                if (Reporter.graphFollowTable(tree, file_name)) {
+                    Output("Se generó la tabla de siguientes en data\\Siguientes\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar la tabla de siguientes");
+                }
+                if (Reporter.graphTransitionTable(tree, file_name)) {
+                    Output("Se generó la tabla de transiciones en data\\Transiciones\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar la tabla de transiciones");
+                }
+
+                AFD afd = Reporter.graphAFD(tree, file_name);
+
+                if (afd != null) {
+                    Output("Se generó el AFD en data\\AFD\\" + file_name + "\\" + tree.id + ".png");
+                } else {
+                    Output_error("Error al generar el AFD");
+                }
+
+                AFDs.put(tree.id, afd);
+
+            } catch (IOException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        Data.put("symbols", symbols);
+        Data.put("sets", sets);
+        Data.put("comparations", comparations);
+
+//        } catch (Exception e) {
+//            Output_error("Error fatal");
+//            System.out.println(e.getCause());
+//        }
+//        updateTree();
     }//GEN-LAST:event_generate_buttonActionPerformed
 
     private void analize_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analize_buttonActionPerformed
@@ -653,7 +656,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
         line += 1;
 
-        position_label.setText(" Lín. " + line + ", Col." + column + " ");
+        position_label.setText(" Lín. " + line + ", Col. " + column + " ");
     }//GEN-LAST:event_input_textMouseClicked
 
     private void update_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_buttonActionPerformed
@@ -675,7 +678,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
         line += 1;
 
-        position_label.setText(" Lín. " + line + ", Col." + column + " ");
+        position_label.setText(" Lín. " + line + ", Col. " + column + " ");
     }//GEN-LAST:event_input_textKeyReleased
 
     private static void deleteFolder(File folder) {
@@ -936,8 +939,6 @@ public class MainGUI extends javax.swing.JFrame {
     public JFileChooser fileChooser;
 
     private File openFile(final JFrame frame) {
-
-        File file = null;
 
         fileChooser = new JFileChooser(main_path);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

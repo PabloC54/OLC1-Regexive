@@ -14,20 +14,21 @@ public class Tree {
     Node root;
 
     private ArrayList<Node> leaves = new ArrayList();
+    private ArrayList<String> expression = new ArrayList();
     private ArrayList<ArrayList> table = new ArrayList();
     private Stack pile = new Stack();
     public String id;
 
     public Tree(ArrayList<String> expression) {
-        System.out.println("expresion : " + expression);
-        id = expression.remove(0);
-        expression.add(0, "#");
-        expression.add(0, ".");
-        Collections.reverse(expression);
+        this.expression = new ArrayList<>(expression);
+        id = this.expression.remove(0);
+        this.expression.add(0, "#");
+        this.expression.add(0, ".");
+        Collections.reverse(this.expression);
 
         int num_leave = 1;
 
-        for (String symbol : expression) {
+        for (String symbol : this.expression) {
             Node left_node, right_node, node;
 
             switch (symbol) {

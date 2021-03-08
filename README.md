@@ -1,8 +1,10 @@
-# Proyecto 1
+# Regexive
 
-| Nombre | Carnet |
-| :---: | :---: |
-| Pablo Cabrera | 201901698 |
+Proyecto 1 del curso de Organización de Lenguajes y Compiladores 1.
+
+|    Nombre     |  Carnet   |             Correo              |
+| :-----------: | :-------: | :-----------------------------: |
+| Pablo Cabrera | 201901698 | pablofernando50259107@gmail.com |
 
 ## Documentación
 

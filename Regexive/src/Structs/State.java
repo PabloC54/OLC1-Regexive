@@ -33,21 +33,22 @@ import java.util.Map;
 public class State {
 
     public String name;
-    public boolean final_state;
+    public boolean is_final_state;
     public Map<String, State> next_states = new HashMap<>();
 
-    public State(String name, boolean final_state) {
+    public State(String name, boolean is_final_state) {
         this.name = name;
-        this.final_state = final_state;
+        this.is_final_state = is_final_state;
     }
 
     public State() {
-
+        this.name = "0";
+        this.is_final_state = false;
     }
 
     public void setData(String name, boolean final_state) {
         this.name = name;
-        this.final_state = final_state;
+        this.is_final_state = final_state;
     }
 
     public String getName() {

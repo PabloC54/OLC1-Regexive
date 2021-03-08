@@ -25,7 +25,6 @@ public class TransitionTable {
             ArrayList state = states.get(i);
             ArrayList<Integer> elements = (ArrayList) state.get(1);
 
-            // TODO  Aqui se encuentra el bug
             for (int leave : elements) {
                 FollowTable sigTabla = new FollowTable();
                 ArrayList lexemeNext = (ArrayList) sigTabla.next(leave, tabla).clone();
