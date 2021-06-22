@@ -70,7 +70,9 @@ public class MainGUI extends javax.swing.JFrame {
     private Analyzers.Parser parser;
     private Analyzers.Scanner scanner;
 
-    private Reporter Reporter = new Reporter(main_path + "\\data");
+    private final String data_path = main_path + "/data";
+
+    private Reporter Reporter = new Reporter(data_path);
 
     private String file_name = "";
     private Boolean saved = false;
@@ -124,28 +126,28 @@ public class MainGUI extends javax.swing.JFrame {
     }
 
     private void initDirectories() {
-        file = new File(main_path + "\\data");
+        file = new File(data_path);
         file.mkdir();
-        file = new File(main_path + "\\data\\AFD");
+        file = new File(data_path + "/AFD");
         file.mkdir();
-        file = new File(main_path + "\\data\\AFND");
+        file = new File(data_path + "/AFND");
         file.mkdir();
-        file = new File(main_path + "\\data\\Arboles");
+        file = new File(data_path + "/Arboles");
         file.mkdir();
-        file = new File(main_path + "\\data\\Errores");
+        file = new File(data_path + "/Errores");
         file.mkdir();
-        file = new File(main_path + "\\data\\Salidas");
+        file = new File(data_path + "/Salidas");
         file.mkdir();
-        file = new File(main_path + "\\data\\Siguientes");
+        file = new File(data_path + "/Siguientes");
         file.mkdir();
-        file = new File(main_path + "\\data\\Transiciones");
+        file = new File(data_path + "/Transiciones");
         file.mkdir();
     }
 
     private void updateTree() {
         initDirectories();
 
-        File fileRoot = new File(main_path + "\\data");
+        File fileRoot = new File(data_path);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new FileNode(fileRoot));
 
         new CreateChildNodes(fileRoot, root);
@@ -153,15 +155,6 @@ public class MainGUI extends javax.swing.JFrame {
         DefaultTreeModel model = new DefaultTreeModel(root);
         data_tree.setModel(model);
 //        expandNodes(0, data_tree.getRowCount());
-    }
-
-    private void expandNodes(int startingIndex, int rowCount) {
-        for (int i = startingIndex; i < rowCount; ++i) {
-            data_tree.expandRow(i);
-        }
-        if (data_tree.getRowCount() != rowCount) {
-            expandNodes(rowCount, data_tree.getRowCount());
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated
@@ -443,7 +436,7 @@ public class MainGUI extends javax.swing.JFrame {
 
         if (!lexical_errors.isEmpty() || !syntactic_errors.isEmpty()) {
             if (Reporter.reportErrors(lexical_errors, syntactic_errors, file_name)) {
-                Output("Se encontraron errores en la entrada. Se generó un reporte de errores en data\\Errores\\" + file_name + ".png");
+                Output("Se encontraron errores en la entrada. Se generó un reporte de errores en data/Errores/" + file_name + ".png");
             } else {
                 Output_error("Error al generar el reporte de errores");
             }
@@ -456,22 +449,22 @@ public class MainGUI extends javax.swing.JFrame {
 
             try {
                 if (Reporter.graphAFND(tree, file_name)) {
-                    Output("Se generó el AFND en data\\AFND\\" + file_name + "\\" + tree.id + ".png");
+                    Output("Se generó el AFND en data/AFND/" + file_name + "/" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar el AFND");
                 }
                 if (Reporter.graphTree(tree, file_name)) {
-                    Output("Se generó el árbol en data\\Arboles\\" + file_name + "\\" + tree.id + ".png");
+                    Output("Se generó el árbol en data/Arboles/" + file_name + "/" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar el árbol");
                 }
                 if (Reporter.graphFollowTable(tree, file_name)) {
-                    Output("Se generó la tabla de siguientes en data\\Siguientes\\" + file_name + "\\" + tree.id + ".png");
+                    Output("Se generó la tabla de siguientes en data/Siguientes/" + file_name + "/" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar la tabla de siguientes");
                 }
                 if (Reporter.graphTransitionTable(tree, file_name)) {
-                    Output("Se generó la tabla de transiciones en data\\Transiciones\\" + file_name + "\\" + tree.id + ".png");
+                    Output("Se generó la tabla de transiciones en data/Transiciones/" + file_name + "/" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar la tabla de transiciones");
                 }
@@ -479,7 +472,7 @@ public class MainGUI extends javax.swing.JFrame {
                 AFD afd = Reporter.graphAFD(tree, file_name);
 
                 if (afd != null) {
-                    Output("Se generó el AFD en data\\AFD\\" + file_name + "\\" + tree.id + ".png");
+                    Output("Se generó el AFD en data/AFD/" + file_name + "/" + tree.id + ".png");
                 } else {
                     Output_error("Error al generar el AFD");
                 }
@@ -516,7 +509,7 @@ public class MainGUI extends javax.swing.JFrame {
 
             initDirectories();
 
-            String name = main_path + "\\data\\Salidas\\" + file_name;
+            String name = data_path + "/Salidas/" + file_name;
             file = new File(name + ".json");
             file.createNewFile();
             FileWriter writer = new FileWriter(file);
@@ -565,7 +558,7 @@ public class MainGUI extends javax.swing.JFrame {
             writer.write(s);
             writer.close();
 
-            Output("Se generó la salida en data\\Salidas\\" + file_name + ".png");
+            Output("Se generó la salida en data/Salidas/" + file_name + ".png");
 
         } catch (IOException e) {
             Output_error("Error fatal");
@@ -584,7 +577,7 @@ public class MainGUI extends javax.swing.JFrame {
             String path = "";
 
             for (Object o : sel.getPath()) {
-                path += "\\" + o;
+                path += "/" + o;
             }
 
             File file_temp = new File(main_path + path);

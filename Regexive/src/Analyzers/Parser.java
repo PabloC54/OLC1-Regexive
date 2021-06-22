@@ -354,7 +354,7 @@ public class Parser extends java_cup.runtime.lr_parser {
                 {
                     Object RESULT = null;
 
-                    CUP$Parser$result = parser.getSymbolFactory().newSymbol("S", 1, ((java_cup.runtime.Symbol) CUP$Parser$stack.peek()), RESULT);
+                    CUP$Parser$result = parser.getSymbolFactory().newSymbol("S", 1, ((java_cup.runtime.Symbol) CUP$Parser$stack.peek()), (Symbol) RESULT);
                 }
                 return CUP$Parser$result;
 
@@ -390,7 +390,7 @@ public class Parser extends java_cup.runtime.lr_parser {
                 {
                     Object RESULT = null;
 
-                    CUP$Parser$result = parser.getSymbolFactory().newSymbol("C", 2, ((java_cup.runtime.Symbol) CUP$Parser$stack.peek()), RESULT);
+                    CUP$Parser$result = parser.getSymbolFactory().newSymbol("C", 2, ((java_cup.runtime.Symbol) CUP$Parser$stack.peek()), (Symbol) RESULT);
                 }
                 return CUP$Parser$result;
 
