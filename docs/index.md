@@ -11,4 +11,4 @@ Proyecto 1 del curso de Organización de Lenguajes y Compiladores 1.
 - [Manual técnico](technical.md)
 
 ## Lanzamientos
-*https://github.com/PabloC54/regexive/releases*
+*[Ver en Github](https://github.com/PabloC54/regexive/releases)*
