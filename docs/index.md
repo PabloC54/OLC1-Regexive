@@ -1,9 +1,5 @@
 # Regexive
-Proyecto 1 del curso de Organización de Lenguajes y Compiladores 1.
-
-## Contacto
-- *Nombre:* Pablo Cabrera
-- *Correo:* pablofernando50259107@gmail.com
+Interfaz de usuario para el testing de expresiones regulares.
 
 ## Documentación
 - [Gramática de regexive](grammar.md)
